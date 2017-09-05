@@ -1,0 +1,4 @@
+server_host: "127.0.0.1:8000"
+mq_url: "localhost"
+mq_channel: "eventmapper"
+auth_token: "super-token"
