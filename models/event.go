@@ -2,6 +2,8 @@ package models
 
 import (
 	"eventmapper/mq"
+
+	"encoding/json"
 	"gopkg.in/validator.v2"
 )
 
@@ -10,7 +12,7 @@ type Event struct {
 	EventTarget  string				`validate:"min=1,max=255"`
 	UserId       string				`validate:"min=1,max=100"`
 	CreatedAt    int64				`validate:"nonzero,min=1"`
-	Params		 [string]string     `validate:"max=100"`
+	Params		 map[string]string  `validate:"max=100"`
 }
 
 func CreateNewEvent() *Event {
@@ -18,7 +20,7 @@ func CreateNewEvent() *Event {
 }
 
 func (e *Event) Publish(mqChannel *mq.Channel) error {
-	return mqChannel.PublishEvent(event)
+	return mqChannel.PublishEvent(e)
 }
 
 func (e *Event) GetBody() ([]byte, error) {

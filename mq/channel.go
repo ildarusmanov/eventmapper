@@ -1,9 +1,12 @@
 package mq
 
 import (
-	"eventmapper/models"
 	"github.com/streadway/amqp"
 )
+
+type Event interface {
+	GetBody() ([]byte, error)
+}
 
 type Channel struct {
 	connection *amqp.Connection
@@ -11,7 +14,7 @@ type Channel struct {
 }
 
 func CreateChannelFromString(mqUrl string) (*Channel, error) {
-	conn, err := CreateNewConnection(config.MqUrl)
+	conn, err := CreateNewConnection(mqUrl)
 
 	if err != nil {
 		return nil, err
@@ -21,7 +24,7 @@ func CreateChannelFromString(mqUrl string) (*Channel, error) {
 }
 
 func CreateNewChannel(connection *amqp.Connection) (*Channel, error) {
-	amqpCh, err := conn.Channel()
+	amqpCh, err := connection.Channel()
 
 	if err != nil {
 		return nil, err
@@ -42,32 +45,31 @@ func (c *Channel) ExchangeDeclare(exName, exType string) error {
         )
 }
 
-func (c *Channel) QueueDeclare(qName string) (*amqp.Queue, error) {
-	return ch.QueueDeclare(
-	  qName,    // name
-	  false, // durable
-	  false, // delete when usused
-	  true,  // exclusive
-	  false, // noWait
-	  nil,   // arguments
+func (c *Channel) QueueDeclare(qName string) (amqp.Queue, error) {
+	return c.channel.QueueDeclare(
+		qName,    // name
+		true, // durable
+		false, // delete when usused
+		true,  // exclusive
+		false, // noWait
+		nil,   // arguments
 	)
 }
 
 func (c *Channel) Publish(body []byte, qName, exName string) error {
-	return ch.Publish(
-			exName,  // exchange
-			qName, // routing key
-			false, // mandatory
-			false,
-			amqp.Publishing {
-				DeliveryMode: amqp.Persistent,
-				ContentType: "text/plain",
-				Body: body,
-			}
-		)
+	return c.channel.Publish(
+		exName,  // exchange
+		qName, // routing key
+		false, // mandatory
+		false,
+		amqp.Publishing{
+			DeliveryMode: amqp.Persistent,
+			ContentType: "text/plain",
+			Body: body,
+		})
 }
 
-func (c *Channel) PublishEvent(event *models.Event) error {
+func (c *Channel) PublishEvent(event Event) error {
 	q, err := c.QueueDeclare("events")
 
 	if err != nil {
@@ -81,6 +83,28 @@ func (c *Channel) PublishEvent(event *models.Event) error {
 	}
 
 	return c.Publish(body, q.Name, "") 
+}
+
+func (c *Channel) Consume(qName, cName string) (<-chan amqp.Delivery, error) {
+    return c.channel.Consume(
+        qName, // queue
+        cName,     // consumer
+        true,   // auto ack
+        false,  // exclusive
+        false,  // no local
+        false,  // no wait
+        nil,    // args
+    )
+}
+
+func (c *Channel) ConsumeEvents() (<-chan amqp.Delivery, error) {
+	q, err := c.QueueDeclare("events")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return c.Consume(q.Name, "")
 }
 
 func (c *Channel) Close() {

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"eventmapper/configs"
 	"eventmapper/models"
 	"eventmapper/mq"
 
@@ -9,7 +8,7 @@ import (
 	"net/http"
 )
 
-type ActionLogController struct {
+type EventController struct {
 	mqChannel *mq.Channel
 }
 

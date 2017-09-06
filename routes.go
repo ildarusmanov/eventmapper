@@ -1,7 +1,6 @@
 package main
 
 import (
-	"eventmapper/configs"
 	"eventmapper/controllers"
 	"eventmapper/mq"
 	"fmt"
@@ -12,7 +11,7 @@ func CreateNewRouter(mqChannel *mq.Channel) *mux.Router {
 	router := mux.NewRouter()
 
 	fmt.Println("Create controller")
-	controller := controllers.CreateNewEventController(mqChannel, config)
+	controller := controllers.CreateNewEventController(mqChannel)
 
 	fmt.Println("Define routes")
 	router.HandleFunc("/create", controller.CreateHandler).Methods("POST")

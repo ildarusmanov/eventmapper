@@ -1,8 +1,8 @@
 package main
 
 import (
+	"eventmapper/mq"
 	"eventmapper/configs"
-	"eventmapper/db"
 	"eventmapper/middlewares"
 
 	"fmt"
@@ -20,11 +20,15 @@ func main() {
 	config := configs.LoadConfigFile(configFilePath)
 
 	fmt.Println("Open MQ session")
-	mqChannel := mq.CreateChannelFromString(config.MqUrl)
+	mqChannel, err := mq.CreateChannelFromString(config.MqUrl)
 	defer mqChannel.Close()
 
+	if err != nil {
+		return
+	}
+
 	fmt.Println("Create router")
-	router := CreateNewRouter(mqChannel, config)
+	router := CreateNewRouter(mqChannel)
 
 	fmt.Println("Define middleware")
 	mware := middleware.CreateNewMiddleware()
@@ -34,4 +38,7 @@ func main() {
 
 	fmt.Println("Start web-server")
 	StartServer(mware, config)
+
+	fmt.Println("Start events listener")
+	StartEventsListener(mqChannel)
 }
