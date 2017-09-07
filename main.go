@@ -36,9 +36,9 @@ func main() {
 	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
 	mware.AddHandler(router)
 
+	fmt.Println("Start events listener")
+	go StartEventsListener(mqChannel)
+
 	fmt.Println("Start web-server")
 	StartServer(mware, config)
-
-	fmt.Println("Start events listener")
-	StartEventsListener(mqChannel)
 }
