@@ -49,7 +49,7 @@ func (c *Channel) PublishEvent(event Event, rKey string) error {
 	return c.publish(body, fullRKey, EVENTS_EXCH_NAME)
 }
 
-func (c *Channel) ConsumeEvents(rKey string) (<-chan amqp.Delivery, error) {
+func (c *Channel) ConsumeEvents(rKeys string) (<-chan amqp.Delivery, error) {
 	err := c.exchangeDeclare(EVENTS_EXCH_NAME, EVENTS_EXCH_TYPE)
 
 	if err != nil {
@@ -62,10 +62,12 @@ func (c *Channel) ConsumeEvents(rKey string) (<-chan amqp.Delivery, error) {
 		return nil, err
 	}
 
-	err = c.queueBind(EVENTS_EXCH_NAME, q.Name, rKey)
+	for _, rKey := range strings.Split(rKeys, ",") {
+		err = c.queueBind(EVENTS_EXCH_NAME, q.Name, rKey)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return c.consume(q.Name, "")
