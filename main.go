@@ -1,44 +1,33 @@
 package main
 
 import (
-	"eventmapper/mq"
 	"eventmapper/configs"
 	"eventmapper/middlewares"
-
-	"fmt"
+	"github.com/WajoxSoftware/middleware"
+	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/WajoxSoftware/middleware"
 )
 
 func main() {
-	fmt.Println("Starting application...")
+	log.Printf("[x] Starting application...")
 
-	fmt.Println("Load config")
+	log.Printf("[x] Load config")
 	configFilePath, _ := filepath.Abs(os.Args[1])
 	config := configs.LoadConfigFile(configFilePath)
 
-	fmt.Println("Open MQ session")
-	mqChannel, err := mq.CreateChannelFromString(config.MqUrl)
-	defer mqChannel.Close()
+	log.Printf("[x] Create router")
+	router := CreateNewRouter(config)
 
-	if err != nil {
-		return
-	}
-
-	fmt.Println("Create router")
-	router := CreateNewRouter(mqChannel)
-
-	fmt.Println("Define middleware")
+	log.Printf("[x] Define middleware")
 	mware := middleware.CreateNewMiddleware()
 	mware.AddHandler(middlewares.CreateNewAuth(config.AuthToken))
 	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
 	mware.AddHandler(router)
 
-	fmt.Println("Start events listener")
-	go StartEventsListener(mqChannel)
+	log.Printf("[x] Start events listener")
+	go BindEventsHandlers(config)
 
-	fmt.Println("Start web-server")
+	log.Printf("[x] Start web-server")
 	StartServer(mware, config)
 }

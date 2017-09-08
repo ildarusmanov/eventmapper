@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"github.com/WajoxSoftware/middleware"
 )
 
 type Auth struct {
@@ -19,6 +20,6 @@ func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     	w.WriteHeader(403)
     	w.Write([]byte("Forbidden"))
 
- 		panic("Invalid token")
+ 		middleware.StopPropagation()	
     }
 }

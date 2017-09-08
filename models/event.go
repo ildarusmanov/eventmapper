@@ -2,7 +2,6 @@ package models
 
 import (
 	"eventmapper/mq"
-
 	"encoding/json"
 	"gopkg.in/validator.v2"
 )
@@ -19,12 +18,16 @@ func CreateNewEvent() *Event {
 	return &Event{}
 }
 
-func (e *Event) Publish(mqChannel *mq.Channel) error {
-	return mqChannel.PublishEvent(e)
+func (e *Event) Publish(mqChannel *mq.Channel, rKey string) error {
+	return mqChannel.PublishEvent(e, rKey)
 }
 
 func (e *Event) GetBody() ([]byte, error) {
 	return json.Marshal(e)
+}
+
+func (e *Event) GetEventName() string {
+	return e.EventName
 }
 
 func (e *Event) Validate() error {

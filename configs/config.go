@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	ServerHost string `yaml:"server_host"`
-	MqUrl      string `yaml:"mq_url"`
-	AuthToken  string `yaml:"auth_token"`
+	ServerHost string                `yaml:"server_host"`
+	MqUrl      string                `yaml:"mq_url"`
+	AuthToken  string                `yaml:"auth_token"`
+	MqHandlers []map[string]string   `yaml:"mq_handlers"`
 }
 
 func CreateNewConfig() *Config {

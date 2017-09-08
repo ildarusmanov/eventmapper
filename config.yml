@@ -1,4 +1,8 @@
 server_host: "127.0.0.1:8000"
-mq_url: "amqp://guest:guest@localhost:5672"
-mq_channel: "eventmapper"
 auth_token: "super-token"
+mq_url: "amqp://guest:guest@localhost:5672"
+mq_handlers:
+  - mq_url: "amqp://guest:guest@localhost:5672"
+    r_key: "apply.*"
+    handler_type: "http_json"
+    url: "http://0.0.0.0:5000"
