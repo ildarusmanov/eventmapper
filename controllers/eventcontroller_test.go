@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"eventmapper/db"
 	"eventmapper/models"
 	"eventmapper/tests"
 
@@ -20,10 +19,8 @@ func TestCreateHandler(t *testing.T) {
 	}()
 
 	config := tests.CreateConfig()
-	mqSession := mq.CreateSession(config.MqUrl)
-	defer mqSession.Close()
 
-	controller := CreateNewEventController(dbSession, config)
+	controller := CreateNewEventController(config.MqUrl)
 
 	bodyJson := "{\"EventName\": \"authorized\", \"EventTarget\": \"user\", \"UserId\": \"some-user-id\", \"CreatedAt\": 1712311}"
 	inBody := bytes.NewBufferString(bodyJson)
@@ -42,7 +39,7 @@ func TestCreateHandler(t *testing.T) {
    		t.Error("Invalid json response")
     }
 
-    if event.ActionName != "authorized" {
+    if event.EventName != "authorized" {
     	t.Error("Incorrect data")
     }
 }

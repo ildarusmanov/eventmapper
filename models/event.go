@@ -18,8 +18,8 @@ func CreateNewEvent() *Event {
 	return &Event{}
 }
 
-func (e *Event) Publish(mqChannel *mq.Channel, rKey string) error {
-	return mqChannel.PublishEvent(e, rKey)
+func (e *Event) Publish(ch mq.EventChannel, rKey string) error {
+	return ch.PublishEvent(e, rKey)
 }
 
 func (e *Event) GetBody() ([]byte, error) {

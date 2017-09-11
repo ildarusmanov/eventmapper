@@ -7,7 +7,7 @@ import (
 )
 
 func CreateConfig() *configs.Config {
-	configFilePath, _ := filepath.Abs("/go/src/eventmapper/config_test.yml")
+	configFilePath, _ := filepath.Abs("../config_test.yml")
 	config := configs.LoadConfigFile(configFilePath)
 
 	return config

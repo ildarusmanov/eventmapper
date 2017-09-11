@@ -16,6 +16,12 @@ type Event interface {
 	GetBody() ([]byte, error)
 }
 
+type EventChannel interface {
+	PublishEvent(Event, string) error
+	ConsumeEvents(string) (<-chan amqp.Delivery, error)
+	Close()
+}
+
 type Channel struct {
 	channel *amqp.Channel
 }
