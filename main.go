@@ -26,7 +26,9 @@ func main() {
 	mware.AddHandler(router)
 
 	log.Printf("[x] Start events listener")
-	go BindEventsHandlers(config)
+	closeCh := make(chan bool)
+	errCh := make(chan error)
+	BindEventsHandlers(config, closeCh, errCh)
 
 	log.Printf("[x] Start web-server")
 	StartServer(mware, config)

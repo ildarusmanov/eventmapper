@@ -5,9 +5,9 @@ import (
 	"eventmapper/models"
 )
 
-func BindEventsHandlers(config *configs.Config) {
+func BindEventsHandlers(config *configs.Config, closeCh chan bool, errCh chan error) {
 	for _, cfg := range config.MqHandlers {
 		mqH := models.BuildHandlerFromConfig(cfg)
-		mqH.StartListening()
+		go mqH.StartListening(closeCh, errCh)
 	}
 }

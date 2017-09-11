@@ -45,12 +45,12 @@ func BuildHandlerFromConfig(cfg map[string]string) *Handler {
 }
 
 /**
- * Start listening for events
+ * Start listener
+ * @param closeCh chan bool
+ * @param errCh chan error
  */
-func (h *Handler) StartListening() {
+func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
 	log.Printf("[x] Starting handler %s for %s", h.HandlerType, h.RKey)
-
-	forever := make(chan bool)
 
 	mqConn, err := mq.CreateNewConnection(h.MqUrl)
 	defer mqConn.Close()
@@ -72,33 +72,32 @@ func (h *Handler) StartListening() {
 		panic(err)
 	}
 
-	go func() {
-		log.Printf("[x] Start listener")
-		for m := range msgs {
-			log.Printf("[x] %s", m.Body)
-			h.process(m.Body)
+	log.Printf("[x] Start listener")
 
-		}
-		log.Printf("[x] Finish listener")
-	}()
+	for m := range msgs {
+		log.Printf("[x] %s", m.Body)
+		errCh <- h.process(m.Body)
+	}
 
-	log.Printf("[x] Wait for messages")
+	<-closeCh
 
-	<- forever
+	log.Printf("[x] Finish listener")
 }
 
 /**
  * send event through defined transport
  * @param  eventBody   []byte
  */
-func (h *Handler) process(eventBody []byte) {
+func (h *Handler) process(eventBody []byte) error {
 	log.Printf("[x] New message received %s", eventBody)
 
 	if h.HandlerType == HANDLER_TYPE_HTTP_JSON {
-		h.httpJsonTransport(eventBody)
-	} else {
-		log.Printf("[x] Unknown handler type")
+		return h.httpJsonTransport(eventBody)
 	}
+
+	log.Printf("[x] Unknown handler type")
+
+	return nil
 }
 
 /**
