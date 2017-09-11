@@ -29,7 +29,7 @@ func TestCreateHandler(t *testing.T) {
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/create", inBody)
+	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/create/apply.events.new_user", inBody)
 
 	controller.CreateHandler(w, r)
 

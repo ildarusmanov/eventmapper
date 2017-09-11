@@ -92,7 +92,7 @@ func (h *Handler) StartListening() {
  * @param  eventBody   []byte
  */
 func (h *Handler) process(eventBody []byte) {
-	log.Printf("[x] New message received", eventBody)
+	log.Printf("[x] New message received %s", eventBody)
 
 	if h.HandlerType == HANDLER_TYPE_HTTP_JSON {
 		h.httpJsonTransport(eventBody)
@@ -123,7 +123,13 @@ func(h *Handler) httpJsonTransport(eventBody []byte) error {
 
 	resp, err := client.Do(req)
 
-	log.Printf("[x] POST %s - %s", h.Options["url"], resp.Status)
+	if err != nil {
+		log.Printf("[x] %s", err)
+
+		return err
+	}
+
+	log.Printf("[x] POST %s", h.Options["url"], resp.Status)
 	
 	return err
 }
