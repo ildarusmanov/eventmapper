@@ -78,11 +78,11 @@ func (h* JsonHttpHandler) getAuthPwd() string {
  * @param  options map[string]string
  */
 func (h *JsonHttpHandler) Init() error {
-	if _, ok := h.Options["r_key"]; ok {
+	if _, ok := h.Options["r_key"]; !ok {
 		return IncorrectOptions
 	}
 
-	if _, ok := h.Options["mq_url"]; ok {
+	if _, ok := h.Options["mq_url"]; !ok {
 		return IncorrectOptions
 	}
 

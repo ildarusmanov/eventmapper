@@ -31,7 +31,11 @@ type Handler interface {
 func CreateNewHandler(options map[string]string) (Handler, error) {
 	if options["handler_type"] == HANDLER_TYPE_HTTP_JSON {
 		h := &JsonHttpHandler{options}
-		h.Init()
+		
+		if err := h.Init(); err != nil {
+			return nil, err
+		}
+
 		return h, nil
 	}
 
@@ -44,17 +48,17 @@ func CreateNewHandler(options map[string]string) (Handler, error) {
  * @param closeCh chan bool
  * @param errCh chan error
  */
-func StartHandler(options map[string]string, closeCh chan bool, errCh chan error) {
+func StartHandler(options map[string]string, closeCh chan bool, errCh chan error) error {
 	h, err := CreateNewHandler(options)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = h.Start()
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	defer h.Stop()
@@ -65,20 +69,20 @@ func StartHandler(options map[string]string, closeCh chan bool, errCh chan error
 	defer mqConn.Close()
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	mqChannel, err := mq.CreateNewChannel(mqConn)
 	defer mqChannel.Close()
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	msgs, err := mqChannel.ConsumeEvents(h.GetRKey())
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	log.Printf("[x] Start listener")
@@ -86,11 +90,13 @@ func StartHandler(options map[string]string, closeCh chan bool, errCh chan error
 	for m := range msgs {
 		select {
 		case <-closeCh:
-			return
+			return nil
 		default:
 			errCh <- h.ProcessMessage(m.Body)
 		}
 	}
 
 	log.Printf("[x] Finish listener")
+
+	return nil
 }

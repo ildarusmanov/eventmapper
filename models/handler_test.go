@@ -9,6 +9,37 @@ import (
 	"time"
 )
 
+func TestCreateNewHandlerWithValidOptions(t *testing.T) {
+	o := map[string]string{
+		"mq_url": "mq_url",
+		"r_key": "r_key",
+		"handler_type": "http_json",
+		"url": "url",
+	}
+
+	h, err := CreateNewHandler(o)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if h == nil {
+		t.Error("Result should not be nil")
+	}
+}
+
+func TestCreateNewHandlerWithInvalidOptions(t *testing.T) {
+	h, err := CreateNewHandler(map[string]string{})
+
+	if h != nil {
+		t.Error("Result should be nil")
+	}
+
+	if err == nil {
+		t.Error("Should be error")
+	}
+}
+
 func TestPublishNListening(t *testing.T) {
 	// load config
 	config := tests.CreateConfig()
