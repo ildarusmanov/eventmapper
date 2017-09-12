@@ -1,13 +1,13 @@
 package models
 
 import (
-	"eventmapper/mq"
-	"errors"
-	"gopkg.in/validator.v2"
 	"encoding/json"
+	"errors"
+	"eventmapper/mq"
+	"github.com/streadway/amqp"
+	"gopkg.in/validator.v2"
 	"testing"
 	"time"
-	"github.com/streadway/amqp"
 )
 
 type eventChannelMock struct {

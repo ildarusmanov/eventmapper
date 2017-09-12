@@ -6,7 +6,7 @@ import (
 
 type Response struct {
 	contentType string
-	charset string
+	charset     string
 }
 
 func CreateNewOkResponse(contentType string, charset string) *Response {
@@ -18,6 +18,6 @@ func CreateNewJsonOkResponse() *Response {
 }
 
 func (resp *Response) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", resp.contentType + "; charset=" + resp.charset)
+	w.Header().Set("Content-Type", resp.contentType+"; charset="+resp.charset)
 	w.WriteHeader(http.StatusOK)
 }

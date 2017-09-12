@@ -1,10 +1,10 @@
 package models
 
 import (
-	"eventmapper/mq"
-	"net/http"
 	"bytes"
+	"eventmapper/mq"
 	"log"
+	"net/http"
 )
 
 const (
@@ -12,10 +12,10 @@ const (
 )
 
 type Handler struct {
-	MqUrl       string             `yaml:"mq_url"`
-	RKey        string             `yaml:"r_key"`
-	HandlerType string             `yaml:"handler_type"`
-	Options     map[string]string  `yaml:"handler_options"`
+	MqUrl       string            `yaml:"mq_url"`
+	RKey        string            `yaml:"r_key"`
+	HandlerType string            `yaml:"handler_type"`
+	Options     map[string]string `yaml:"handler_options"`
 }
 
 /**
@@ -28,10 +28,10 @@ type Handler struct {
  */
 func CreateNewHandler(mqUrl string, rKey string, handlerType string, options map[string]string) *Handler {
 	return &Handler{
-		MqUrl: mqUrl,
-		RKey: rKey,
+		MqUrl:       mqUrl,
+		RKey:        rKey,
 		HandlerType: handlerType,
-		Options: options,
+		Options:     options,
 	}
 }
 
@@ -59,7 +59,7 @@ func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
 		panic(err)
 	}
 
-	mqChannel, err := mq.CreateNewChannel(mqConn)	
+	mqChannel, err := mq.CreateNewChannel(mqConn)
 	defer mqChannel.Close()
 
 	if err != nil {
@@ -75,11 +75,14 @@ func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
 	log.Printf("[x] Start listener")
 
 	for m := range msgs {
-		log.Printf("[x] %s", m.Body)
-		errCh <- h.process(m.Body)
+		select {
+		case <-closeCh:
+			return
+		default:
+			log.Printf("[x] %s", m.Body)
+			errCh <- h.process(m.Body)
+		}
 	}
-
-	<-closeCh
 
 	log.Printf("[x] Finish listener")
 }
@@ -104,7 +107,7 @@ func (h *Handler) process(eventBody []byte) error {
  * send event through HTTP JSON api
  * @param  eventBody   []byte
  */
-func(h *Handler) httpJsonTransport(eventBody []byte) error {
+func (h *Handler) httpJsonTransport(eventBody []byte) error {
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		"POST",
@@ -129,6 +132,6 @@ func(h *Handler) httpJsonTransport(eventBody []byte) error {
 	}
 
 	log.Printf("[x] POST %s", h.Options["url"], resp.Status)
-	
+
 	return err
 }

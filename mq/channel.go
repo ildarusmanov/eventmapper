@@ -2,8 +2,8 @@ package mq
 
 import (
 	"github.com/streadway/amqp"
-	"strings"
 	"log"
+	"strings"
 )
 
 const (
@@ -86,20 +86,20 @@ func (c *Channel) Close() {
 
 func (c *Channel) exchangeDeclare(exName, exType string) error {
 	return c.channel.ExchangeDeclare(
-        exName, // name
-        exType, // type
-        true, // durable
-        false, // auto-deleted
-        false, // internal
-        false, // no-wait
-        nil, // arguments
-    )
+		exName, // name
+		exType, // type
+		true,   // durable
+		false,  // auto-deleted
+		false,  // internal
+		false,  // no-wait
+		nil,    // arguments
+	)
 }
 
 func (c *Channel) queueDeclare(qName string) (amqp.Queue, error) {
 	return c.channel.QueueDeclare(
-		qName,    // name
-		true, // durable
+		qName, // name
+		true,  // durable
 		false, // delete when usused
 		true,  // exclusive
 		false, // noWait
@@ -109,8 +109,8 @@ func (c *Channel) queueDeclare(qName string) (amqp.Queue, error) {
 
 func (c *Channel) queueBind(exName, qName, rKey string) error {
 	return c.channel.QueueBind(
-		qName, // queue name
-		rKey,     // routing key
+		qName,  // queue name
+		rKey,   // routing key
 		exName, // exchange
 		false,
 		nil,
@@ -119,24 +119,24 @@ func (c *Channel) queueBind(exName, qName, rKey string) error {
 
 func (c *Channel) publish(body []byte, rKey, exName string) error {
 	return c.channel.Publish(
-		exName,  // exchange
-		rKey, // routing key
-		false, // mandatory
+		exName, // exchange
+		rKey,   // routing key
+		false,  // mandatory
 		false,
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body: body,
+			Body:        body,
 		})
 }
 
 func (c *Channel) consume(qName, cName string) (<-chan amqp.Delivery, error) {
-    return c.channel.Consume(
-        qName,  // queue
-        cName,  // consumer
-        true,   // auto ack
-        false,  // exclusive
-        false,  // no local
-        false,  // no wait
-        nil,    // args
-    )
+	return c.channel.Consume(
+		qName, // queue
+		cName, // consumer
+		true,  // auto ack
+		false, // exclusive
+		false, // no local
+		false, // no wait
+		nil,   // args
+	)
 }

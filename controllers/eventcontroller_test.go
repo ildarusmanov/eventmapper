@@ -4,11 +4,11 @@ import (
 	"eventmapper/models"
 	"eventmapper/tests"
 
-	"io/ioutil"
 	"bytes"
-	"testing"
-	"net/http/httptest"
 	"encoding/json"
+	"io/ioutil"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestCreateHandler(t *testing.T) {
@@ -35,11 +35,11 @@ func TestCreateHandler(t *testing.T) {
 
 	event := models.CreateNewEvent()
 
-    if err := json.Unmarshal(body, event); err != nil {
-   		t.Error("Invalid json response")
-    }
+	if err := json.Unmarshal(body, event); err != nil {
+		t.Error("Invalid json response")
+	}
 
-    if event.EventName != "authorized" {
-    	t.Error("Incorrect data")
-    }
+	if event.EventName != "authorized" {
+		t.Error("Incorrect data")
+	}
 }

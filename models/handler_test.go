@@ -5,6 +5,8 @@ import (
 	"eventmapper/tests"
 	"testing"
 	"time"
+	"net/http"
+	"net/http/httptest"
 )
 
 func TestCreateNewHandler(t *testing.T) {
@@ -37,6 +39,14 @@ func TestPublishNListening(t *testing.T) {
 
 	h := BuildHandlerFromConfig(config.MqHandlers[0])
 
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Error("Ok")
+	}))
+
+	defer ts.Close()
+
+	h.Options["url"] = ts.URL
+
 	closeCh := make(chan bool)
 	errCh := make(chan error)
 
@@ -45,8 +55,9 @@ func TestPublishNListening(t *testing.T) {
 	e := createValidEvent()
 	err = e.Publish(ch, "apply")
 
-	time.Sleep(5 * time.Second)
-	closeCh <- true
+	time.Sleep(100 * time.Millisecond)
+
+	close(closeCh)
 
 	if err != nil {
 		t.Error("Can not pubslish event", err)

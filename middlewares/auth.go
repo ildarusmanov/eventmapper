@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"net/http"
 	"github.com/WajoxSoftware/middleware"
+	"net/http"
 )
 
 type Auth struct {
@@ -14,12 +14,12 @@ func CreateNewAuth(authToken string) *Auth {
 }
 
 func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    isValidToken := a.AuthToken == r.URL.Query().Get("token")
+	isValidToken := a.AuthToken == r.URL.Query().Get("token")
 
-    if (!isValidToken) {
-    	w.WriteHeader(403)
-    	w.Write([]byte("Forbidden"))
+	if !isValidToken {
+		w.WriteHeader(403)
+		w.Write([]byte("Forbidden"))
 
- 		middleware.StopPropagation()	
-    }
+		middleware.StopPropagation()
+	}
 }

@@ -4,8 +4,8 @@ import (
 	"eventmapper/models"
 	"eventmapper/mq"
 
-	"github.com/gorilla/mux"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ type EventController struct {
 
 /**
  * Event controller constructor
- * 
+ *
  * @param *mq.Session
  * @param *configs.Config
  * @return *EventController
@@ -26,18 +26,18 @@ func CreateNewEventController(mqUrl string) *EventController {
 
 /**
  * Publish event method
- * 
+ *
  * @param http.ResponseWriter
  * @param *http.Request
  */
 func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) {
-    event := models.CreateNewEvent()
-    vars := mux.Vars(r)
-    rKey := vars["r_key"]
+	event := models.CreateNewEvent()
+	vars := mux.Vars(r)
+	rKey := vars["r_key"]
 
-    if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-   		panic(err)
-    }
+	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
+		panic(err)
+	}
 
 	if err := event.Validate(); err != nil {
 		panic(err)
@@ -50,18 +50,18 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
 		panic(err)
 	}
 
-	mqChannel, err := mq.CreateNewChannel(mqConn)	
+	mqChannel, err := mq.CreateNewChannel(mqConn)
 	defer mqChannel.Close()
 
 	if err != nil {
 		panic(err)
 	}
 
- 	if err := event.Publish(mqChannel, rKey); err != nil {
- 		panic(err)
- 	}
+	if err := event.Publish(mqChannel, rKey); err != nil {
+		panic(err)
+	}
 
-    if err := json.NewEncoder(w).Encode(event); err != nil {
-        panic(err)
-    }
+	if err := json.NewEncoder(w).Encode(event); err != nil {
+		panic(err)
+	}
 }
