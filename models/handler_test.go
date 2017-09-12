@@ -3,10 +3,10 @@ package models
 import (
 	"eventmapper/mq"
 	"eventmapper/tests"
-	"testing"
-	"time"
 	"net/http"
 	"net/http/httptest"
+	"testing"
+	"time"
 )
 
 func TestCreateNewHandler(t *testing.T) {
@@ -40,7 +40,7 @@ func TestPublishNListening(t *testing.T) {
 	h := BuildHandlerFromConfig(config.MqHandlers[0])
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		t.Error("Ok")
+		w.Header().Set("Content-Type", "application/json")
 	}))
 
 	defer ts.Close()
@@ -55,7 +55,7 @@ func TestPublishNListening(t *testing.T) {
 	e := createValidEvent()
 	err = e.Publish(ch, "apply")
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(1 * time.Second)
 
 	close(closeCh)
 
