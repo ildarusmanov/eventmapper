@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Event {
+  string EventName = 1;
+  string EventTarget = 2;
+  string UserId = 3;
+  int32 CreatedAt = 4;
+  map<string, string> Params = 5;
+}
