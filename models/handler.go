@@ -1,58 +1,67 @@
 package models
 
 import (
-	"bytes"
 	"eventmapper/mq"
 	"log"
-	"net/http"
+	"errors"
 )
 
 const (
 	HANDLER_TYPE_HTTP_JSON = "http_json"
 )
 
-type Handler struct {
-	MqUrl       string            `yaml:"mq_url"`
-	RKey        string            `yaml:"r_key"`
-	HandlerType string            `yaml:"handler_type"`
-	Options     map[string]string `yaml:"handler_options"`
+var UndefinedHandlerError = errors.New("Undefined handler type")
+
+type Handler interface {
+	Init() error
+	Start() error
+	Stop()
+	ProcessMessage([]byte) error
+	GetOptions() map[string]string
+	GetMqUrl() string
+	GetRKey() string
 }
 
 /**
  * Create new Handler
- * @param mqUrl string
- * @param rKey string
- * @param handlerType string
  * @param options map[string]string
+ * required keys for options map: mq_url, r_key, handler_type 
  * @return *Handler
  */
-func CreateNewHandler(mqUrl string, rKey string, handlerType string, options map[string]string) *Handler {
-	return &Handler{
-		MqUrl:       mqUrl,
-		RKey:        rKey,
-		HandlerType: handlerType,
-		Options:     options,
+func CreateNewHandler(options map[string]string) (Handler, error) {
+	if options["handler_type"] == HANDLER_TYPE_HTTP_JSON {
+		h := &JsonHttpHandler{options}
+		h.Init()
+		return h, nil
 	}
+
+	return nil, UndefinedHandlerError
 }
 
 /**
- * Create handler by given config map
- * @param cfg map[string]string
- * @return *Handler
- */
-func BuildHandlerFromConfig(cfg map[string]string) *Handler {
-	return CreateNewHandler(cfg["mq_url"], cfg["r_key"], cfg["handler_type"], cfg)
-}
-
-/**
- * Start listener
+ * Start listening for messages
+ * @param h Handler
  * @param closeCh chan bool
  * @param errCh chan error
  */
-func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
-	log.Printf("[x] Starting handler %s for %s", h.HandlerType, h.RKey)
+func StartHandler(options map[string]string, closeCh chan bool, errCh chan error) {
+	h, err := CreateNewHandler(options)
 
-	mqConn, err := mq.CreateNewConnection(h.MqUrl)
+	if err != nil {
+		panic(err)
+	}
+
+	err = h.Start()
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer h.Stop()
+
+	log.Printf("[x] Starting handler for %s", h.GetRKey())
+
+	mqConn, err := mq.CreateNewConnection(h.GetMqUrl())
 	defer mqConn.Close()
 
 	if err != nil {
@@ -66,7 +75,7 @@ func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
 		panic(err)
 	}
 
-	msgs, err := mqChannel.ConsumeEvents(h.RKey)
+	msgs, err := mqChannel.ConsumeEvents(h.GetRKey())
 
 	if err != nil {
 		panic(err)
@@ -79,59 +88,9 @@ func (h *Handler) StartListening(closeCh chan bool, errCh chan error) {
 		case <-closeCh:
 			return
 		default:
-			log.Printf("[x] %s", m.Body)
-			errCh <- h.process(m.Body)
+			errCh <- h.ProcessMessage(m.Body)
 		}
 	}
 
 	log.Printf("[x] Finish listener")
-}
-
-/**
- * send event through defined transport
- * @param  eventBody   []byte
- */
-func (h *Handler) process(eventBody []byte) error {
-	log.Printf("[x] New message received %s", eventBody)
-
-	if h.HandlerType == HANDLER_TYPE_HTTP_JSON {
-		return h.httpJsonTransport(eventBody)
-	}
-
-	log.Printf("[x] Unknown handler type")
-
-	return nil
-}
-
-/**
- * send event through HTTP JSON api
- * @param  eventBody   []byte
- */
-func (h *Handler) httpJsonTransport(eventBody []byte) error {
-	client := &http.Client{}
-	req, err := http.NewRequest(
-		"POST",
-		h.Options["url"],
-		bytes.NewReader(eventBody),
-	)
-
-	if err != nil {
-		return err
-	}
-
-	if _, ok := h.Options["auth_uname"]; ok {
-		req.SetBasicAuth(h.Options["auth_uname"], h.Options["auth_pwd"])
-	}
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		log.Printf("[x] %s", err)
-
-		return err
-	}
-
-	log.Printf("[x] POST %s", h.Options["url"], resp.Status)
-
-	return err
 }

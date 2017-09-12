@@ -9,54 +9,40 @@ import (
 	"time"
 )
 
-func TestCreateNewHandler(t *testing.T) {
-	h := CreateNewHandler(
-		"mqUrl",
-		"rKey",
-		"hType",
-		map[string]string{"key1": "value1"},
-	)
-
-	if h.MqUrl != "mqUrl" || h.RKey != "rKey" || h.HandlerType != "hType" || h.Options["key1"] != "value1" {
-		t.Error("incorrect initialization")
-	}
-}
-
 func TestPublishNListening(t *testing.T) {
+	// load config
 	config := tests.CreateConfig()
 
+	// init amqp connection and channel
 	conn, err := mq.CreateNewConnection(config.MqUrl)
-
 	if err != nil {
 		t.Error("Can not conenct to RabbitMQ")
 	}
-
 	ch, err := mq.CreateNewChannel(conn)
-
 	if err != nil {
 		t.Error("Can not create channel")
 	}
 
-	h := BuildHandlerFromConfig(config.MqHandlers[0])
-
+	// create test http server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 	}))
-
 	defer ts.Close()
 
-	h.Options["url"] = ts.URL
-
+	// init handler params
+	o := config.MqHandlers[0]
+	o["url"] = ts.URL
 	closeCh := make(chan bool)
 	errCh := make(chan error)
+	// start handler
+	go StartHandler(o, closeCh, errCh)
 
-	go h.StartListening(closeCh, errCh)
-
+	// create and send event
 	e := createValidEvent()
 	err = e.Publish(ch, "apply")
 
+	// wait and stop listening
 	time.Sleep(1 * time.Second)
-
 	close(closeCh)
 
 	if err != nil {
