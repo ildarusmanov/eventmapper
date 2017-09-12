@@ -48,7 +48,7 @@ func CreateNewHandler(options map[string]string) (Handler, error) {
  * @param closeCh chan bool
  * @param errCh chan error
  */
-func StartHandler(options map[string]string, closeCh chan bool, errCh chan error) error {
+func StartHandler(options map[string]string, closeCh chan bool) error {
 	h, err := CreateNewHandler(options)
 
 	if err != nil {
@@ -88,11 +88,14 @@ func StartHandler(options map[string]string, closeCh chan bool, errCh chan error
 	log.Printf("[x] Start listener")
 
 	for m := range msgs {
+		log.Printf("[x] %s", m.Body)
+
 		select {
-		case <-closeCh:
+		case c := <-closeCh:
+			log.Printf("[x] %s", c)
 			return nil
 		default:
-			errCh <- h.ProcessMessage(m.Body)
+			log.Printf("[x] error: %s", h.ProcessMessage(m.Body))
 		}
 	}
 

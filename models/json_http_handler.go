@@ -95,6 +95,7 @@ func (h *JsonHttpHandler) Init() error {
  */
 func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
 	client := &http.Client{}
+
 	req, err := http.NewRequest(
 		"POST",
 		h.getUrl(),

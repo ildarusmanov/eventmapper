@@ -64,9 +64,8 @@ func TestPublishNListening(t *testing.T) {
 	o := config.MqHandlers[0]
 	o["url"] = ts.URL
 	closeCh := make(chan bool)
-	errCh := make(chan error)
 	// start handler
-	go StartHandler(o, closeCh, errCh)
+	go StartHandler(o, closeCh)
 
 	// create and send event
 	e := createValidEvent()
@@ -78,9 +77,5 @@ func TestPublishNListening(t *testing.T) {
 
 	if err != nil {
 		t.Error("Can not pubslish event", err)
-	}
-
-	if len(errCh) > 0 {
-		t.Error("Too much errors")
 	}
 }

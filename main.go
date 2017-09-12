@@ -27,8 +27,7 @@ func main() {
 
 	log.Printf("[x] Start events listener")
 	closeCh := make(chan bool)
-	errCh := make(chan error)
-	BindEventsHandlers(config, closeCh, errCh)
+	BindEventsHandlers(config, closeCh)
 
 	log.Printf("[x] Start web-server")
 	StartServer(mware, config)
