@@ -1,22 +1,23 @@
 package main
 
 import (
-	"eventmapper/configs"
-	"eventmapper/mq"
-	"eventmapper/models"
-	"eventmapper/pb"
-	"eventmapper/services"
 	"crypto/md5"
 	"encoding/hex"
-	"log"
-	"net"
 	"errors"
+	"eventmapper/configs"
+	"eventmapper/models"
+	"eventmapper/mq"
+	"eventmapper/pb"
+	"eventmapper/services"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
 )
 
 var InvalidEventRequestSignature = errors.New("Invalid EventRequest signature")
+
 // server is used to implement helloworld.GreeterServer.
 type GrpcServer struct {
 	mqUrl string
@@ -47,12 +48,13 @@ func (s *GrpcServer) publishEvent(rKey string, pbEvent *pb.Event) (mq.Event, err
 		pbEvent.GetParams(),
 	)
 
-	return services.PublishEvent(event,s.mqUrl, rKey)
+	return services.PublishEvent(event, s.mqUrl, rKey)
 }
 
 func (s *GrpcServer) buildResponse(isOk bool, status string) *pb.EventResponse {
 	return &pb.EventResponse{isOk, status}
 }
+
 // SayHello implements helloworld.GreeterServer
 func (s *GrpcServer) CreateEvent(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	if err := s.validateSignature(in); err != nil {
