@@ -54,6 +54,8 @@ func TestPublishNListening(t *testing.T) {
 		t.Error("Can not create channel")
 	}
 
+	var response
+
 	// create test http server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

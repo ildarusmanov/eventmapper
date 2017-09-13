@@ -40,6 +40,96 @@ func (h *JsonHttpHandler) GetRKey() string {
 }
 
 /**
+ * Load options from map
+ * @param  options map[string]string
+ */
+func (h *JsonHttpHandler) Init() error {
+	if _, ok := h.Options["r_key"]; !ok {
+		return IncorrectOptions
+	}
+
+	if _, ok := h.Options["mq_url"]; !ok {
+		return IncorrectOptions
+	}
+
+	return nil
+}
+
+/**
+ * send event through HTTP JSON api
+ * @param  eventBody   []byte
+ */
+func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
+	req, err := h.BuildRequest(eventBody)
+
+	if err != nil {
+		log.Printf("[x] %s", err)
+
+		return err
+	}
+	resp, err := h.SendHttpRequest(req)
+
+	if err != nil {
+		log.Printf("[x] %s", err)
+
+		return err
+	}
+
+	log.Printf("[x] POST %s", h.getUrl(), resp.Status)
+
+	return err
+}
+
+/**
+ * runs on handler start
+ * @return error
+ */
+func (h *JsonHttpHandler) Start() error {
+	return nil
+}
+
+/**
+ * runs on handler finished
+ */
+func (h *JsonHttpHandler) Stop() {
+	return
+}
+
+/**
+ * Create http request
+ * @param  eventBody []byte
+ * @return *http.Request, error
+ */
+func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, error) {
+	req, err := http.NewRequest(
+		"POST",
+		h.getUrl(),
+		bytes.NewReader(eventBody),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if h.hasBasicAuth() {
+		req.SetBasicAuth(h.getAuthUName(), h.getAuthPwd())
+	}
+
+	return req, nil
+}
+
+/**
+ * Send request via http
+ * @param  r *http.Request
+ * @return *http.Response, error
+ */
+func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
+	client := &http.Client{}
+
+	return client.Do(r)
+}
+
+/**
  * Get handler url
  * @return string
  */
@@ -71,69 +161,4 @@ func (h* JsonHttpHandler) getAuthUName() string {
  */
 func (h* JsonHttpHandler) getAuthPwd() string {
 	return h.Options["auth_pwd"]
-}
-
-/**
- * Load options from map
- * @param  options map[string]string
- */
-func (h *JsonHttpHandler) Init() error {
-	if _, ok := h.Options["r_key"]; !ok {
-		return IncorrectOptions
-	}
-
-	if _, ok := h.Options["mq_url"]; !ok {
-		return IncorrectOptions
-	}
-
-	return nil
-}
-
-/**
- * send event through HTTP JSON api
- * @param  eventBody   []byte
- */
-func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
-	client := &http.Client{}
-
-	req, err := http.NewRequest(
-		"POST",
-		h.getUrl(),
-		bytes.NewReader(eventBody),
-	)
-
-	if err != nil {
-		return err
-	}
-
-	if h.hasBasicAuth() {
-		req.SetBasicAuth(h.getAuthUName(), h.getAuthPwd())
-	}
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		log.Printf("[x] %s", err)
-
-		return err
-	}
-
-	log.Printf("[x] POST %s", h.getUrl(), resp.Status)
-
-	return err
-}
-
-/**
- * runs on handler start
- * @return error
- */
-func (h *JsonHttpHandler) Start() error {
-	return nil
-}
-
-/**
- * runs on handler finished
- */
-func (h *JsonHttpHandler) Stop() {
-	return
 }

@@ -30,5 +30,5 @@ func main() {
 	BindEventsHandlers(config, closeCh)
 
 	log.Printf("[x] Start web-server")
-	StartServer(mware, config)
+	StartHttpServer(mware, config)
 }

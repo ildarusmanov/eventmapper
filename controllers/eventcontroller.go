@@ -2,8 +2,7 @@ package controllers
 
 import (
 	"eventmapper/models"
-	"eventmapper/mq"
-
+	"eventmapper/services"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -39,25 +38,7 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
 		panic(err)
 	}
 
-	if err := event.Validate(); err != nil {
-		panic(err)
-	}
-
-	mqConn, err := mq.CreateNewConnection(c.mqUrl)
-	defer mqConn.Close()
-
-	if err != nil {
-		panic(err)
-	}
-
-	mqChannel, err := mq.CreateNewChannel(mqConn)
-	defer mqChannel.Close()
-
-	if err != nil {
-		panic(err)
-	}
-
-	if err := event.Publish(mqChannel, rKey); err != nil {
+	if err := services.PublishEvent(event, c.MqUrl, rKey); err != nil {
 		panic(err)
 	}
 
