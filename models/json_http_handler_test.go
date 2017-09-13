@@ -6,10 +6,10 @@ import (
 
 func TestJsonHttpHandlerGetters(t *testing.T) {
 	o := map[string]string{
-		"mq_url": "mq_url",
-		"r_key": "r_key",
+		"mq_url":       "mq_url",
+		"r_key":        "r_key",
 		"handler_type": "http_json",
-		"url": "url",
+		"url":          "url",
 	}
 
 	h, err := CreateNewHandler(o)

@@ -2,12 +2,13 @@ package models
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"net/http"
-	"errors"
 )
 
 var IncorrectOptions = errors.New("Incorrect options")
+
 /**
  * Handler implementation for HTTP JSON handlers
  */
@@ -25,7 +26,7 @@ func (h *JsonHttpHandler) GetOptions() map[string]string {
 
 /**
  * get RabbitMQ connection url
- * @return string 
+ * @return string
  */
 func (h *JsonHttpHandler) GetMqUrl() string {
 	return h.Options["mq_url"]
@@ -141,7 +142,7 @@ func (h *JsonHttpHandler) getUrl() string {
  * Check Http BasicAuth is enabled
  * @return bool
  */
-func (h* JsonHttpHandler) hasBasicAuth() bool {
+func (h *JsonHttpHandler) hasBasicAuth() bool {
 	_, ok := h.Options["auth_name"]
 
 	return ok
@@ -151,7 +152,7 @@ func (h* JsonHttpHandler) hasBasicAuth() bool {
  * Get http basic auth username
  * @return string
  */
-func (h* JsonHttpHandler) getAuthUName() string {
+func (h *JsonHttpHandler) getAuthUName() string {
 	return h.Options["auth_uname"]
 }
 
@@ -159,6 +160,6 @@ func (h* JsonHttpHandler) getAuthUName() string {
  * Get http basic auth password
  * @return string
  */
-func (h* JsonHttpHandler) getAuthPwd() string {
+func (h *JsonHttpHandler) getAuthPwd() string {
 	return h.Options["auth_pwd"]
 }

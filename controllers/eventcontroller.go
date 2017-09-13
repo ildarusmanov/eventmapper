@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
 	"eventmapper/models"
 	"eventmapper/services"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
 )

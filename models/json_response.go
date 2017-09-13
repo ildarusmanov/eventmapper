@@ -1,7 +1,7 @@
 package models
 
 type JsonResponse struct {
-	IsOk bool
+	IsOk   bool
 	Status string
 }
 
