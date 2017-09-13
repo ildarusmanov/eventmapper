@@ -29,6 +29,9 @@ func main() {
 	closeCh := make(chan bool)
 	BindEventsHandlers(config, closeCh)
 
+	log.Printf("[x] Start grpc server")
+	StartGrpcServer(config)
+
 	log.Printf("[x] Start web-server")
 	StartHttpServer(mware, config)
 }

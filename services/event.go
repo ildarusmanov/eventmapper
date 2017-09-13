@@ -4,7 +4,7 @@ import (
 	"eventmapper/mq"
 )
 
-func PublishEvent(event *mq.Event, mqUrl, rKey string) (mq.Event, error) {
+func PublishEvent(event mq.Event, mqUrl, rKey string) (mq.Event, error) {
 	mqConn, err := mq.CreateNewConnection(mqUrl)
 	defer mqConn.Close()
 

@@ -35,14 +35,16 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
 	rKey := vars["r_key"]
 
 	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-		return h.sendJsonResponse(w, false, err)
+		c.sendJsonResponse(w, false, "decode error")
+		return
 	}
 
-	if err := services.PublishEvent(event, c.MqUrl, rKey); err != nil {
-		return h.sendJsonResponse(w, false, err)
+	if _, err := services.PublishEvent(event, c.mqUrl, rKey); err != nil {
+		c.sendJsonResponse(w, false, "publish error")
+		return
 	}
 
-	h.sendJsonResponse(w, true, "ok")
+	c.sendJsonResponse(w, true, "ok")
 }
 
 /**
@@ -51,7 +53,7 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
  * @param isOk bool
  */
 func (c *EventController) sendJsonResponse(w http.ResponseWriter, isOk bool, status string) {
-	response := CreateNewJsonResponse(true, "ok")
+	response := models.CreateNewJsonResponse(true, "ok")
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		panic(err)

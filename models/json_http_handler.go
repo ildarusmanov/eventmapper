@@ -61,7 +61,7 @@ func (h *JsonHttpHandler) Init() error {
  * @param  eventBody   []byte
  */
 func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
-	req, err := h.BuildRequest(eventBody)
+	req, err := h.BuildHttpRequest(eventBody)
 
 	if err != nil {
 		log.Printf("[x] %s", err)

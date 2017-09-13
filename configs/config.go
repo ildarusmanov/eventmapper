@@ -10,6 +10,7 @@ type Config struct {
 	MqUrl      string              `yaml:"mq_url"`
 	AuthToken  string              `yaml:"auth_token"`
 	GrpcAddr   string              `yaml:"grpc_addr"`
+	GrpcToken  string              `yaml:"grpc_token"`
 	MqHandlers []map[string]string `yaml:"mq_handlers"`
 }
 

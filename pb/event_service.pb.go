@@ -12,7 +12,7 @@ It has these top-level messages:
 	EventRequest
 	EventResponse
 */
-package event_service
+package pb
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
