@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var IncorrectOptions = errors.New("Incorrect options")
+var incorrectJsonHttpHandlerOptionsError = errors.New("Incorrect options")
 
 /**
  * Handler implementation for HTTP JSON handlers
@@ -46,11 +46,15 @@ func (h *JsonHttpHandler) GetRKey() string {
  */
 func (h *JsonHttpHandler) Init() error {
 	if _, ok := h.Options["r_key"]; !ok {
-		return IncorrectOptions
+		return incorrectJsonHttpHandlerOptionsError
 	}
 
 	if _, ok := h.Options["mq_url"]; !ok {
-		return IncorrectOptions
+		return incorrectJsonHttpHandlerOptionsError
+	}
+
+	if _, ok := h.Options["url"]; !ok {
+		return incorrectJsonHttpHandlerOptionsError
 	}
 
 	return nil

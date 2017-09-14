@@ -8,6 +8,7 @@ import (
 
 const (
 	HANDLER_TYPE_HTTP_JSON = "http_json"
+	HANDLER_TYPE_GRPC ="grpc"
 )
 
 var UndefinedHandlerError = errors.New("Undefined handler type")
@@ -31,6 +32,16 @@ type Handler interface {
 func CreateNewHandler(options map[string]string) (Handler, error) {
 	if options["handler_type"] == HANDLER_TYPE_HTTP_JSON {
 		h := &JsonHttpHandler{options}
+
+		if err := h.Init(); err != nil {
+			return nil, err
+		}
+
+		return h, nil
+	}
+
+	if options["handler_type"] == HANDLER_TYPE_GRPC {
+		h := &GrpcHandler{options}
 
 		if err := h.Init(); err != nil {
 			return nil, err

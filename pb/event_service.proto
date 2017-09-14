@@ -14,9 +14,8 @@ message Event {
 
 message EventRequest {
 	string user_token = 1;
-	string signature = 2;
-	string r_key = 3;
-	Event event = 4;
+	string r_key = 2;
+	Event event = 3;
 }
 
 message EventResponse {
