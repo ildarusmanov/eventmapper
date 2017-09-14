@@ -8,7 +8,7 @@ import (
 
 const (
 	HANDLER_TYPE_HTTP_JSON = "http_json"
-	HANDLER_TYPE_GRPC ="grpc"
+	HANDLER_TYPE_GRPC      = "grpc"
 )
 
 var UndefinedHandlerError = errors.New("Undefined handler type")

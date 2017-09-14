@@ -1,9 +1,9 @@
 package models
 
 import (
-	"eventmapper/pb"
-	"errors"
 	"encoding/json"
+	"errors"
+	"eventmapper/pb"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -71,7 +71,6 @@ func (h *GrpcHandler) Init() error {
 		return incorrectGrpcHandlerOptionsError
 	}
 
-
 	if _, ok := h.Options["host"]; !ok {
 		return incorrectGrpcHandlerOptionsError
 	}
@@ -84,7 +83,7 @@ func (h *GrpcHandler) Init() error {
  * @param  eventBody   []byte
  */
 func (h *GrpcHandler) ProcessMessage(eventBody []byte) error {
-	opts , err := h.getConnOptions()
+	opts, err := h.getConnOptions()
 
 	if err != nil {
 		return err
@@ -108,8 +107,8 @@ func (h *GrpcHandler) ProcessMessage(eventBody []byte) error {
 
 	eventReq := &pb.EventRequest{
 		UserToken: h.getUserToken(),
-		RKey: "",
-		Event: event,
+		RKey:      "",
+		Event:     event,
 	}
 
 	_, err = client.CreateEvent(context.Background(), eventReq)
@@ -129,7 +128,7 @@ func (h *GrpcHandler) getConnOptions() ([]grpc.DialOption, error) {
 
 	if h.getTls() {
 		creds, err := credentials.NewClientTLSFromFile(
-			h.getCert(), 
+			h.getCert(),
 			h.getHost(),
 		)
 
@@ -198,5 +197,3 @@ func (h *GrpcHandler) getCert() string {
 func (h *GrpcHandler) getHost() string {
 	return h.Options["host"]
 }
-
-

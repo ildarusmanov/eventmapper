@@ -18,7 +18,6 @@ type GrpcServer struct {
 	mqUrl string
 }
 
-
 /**
  * create event method
  * @param  ctx context.Context
