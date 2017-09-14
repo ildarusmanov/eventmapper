@@ -25,12 +25,20 @@ func main() {
 	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
 	mware.AddHandler(router)
 
-	log.Printf("[x] Start events listener")
-	closeCh := make(chan bool)
-	BindEventsHandlers(config, closeCh)
+	if config.DisableHandlers {
+		log.Printf("[*] Handlers are disabled")
+	} else {
+		log.Printf("[x] Start events listener")
+		closeCh := make(chan bool)
+		BindEventsHandlers(config, closeCh)
+	}
 
-	log.Printf("[x] Start grpc server")
-	StartGrpcServer(config)
+	if config.DisableGrpc {
+		log.Printf("[*] GRPC is disabled")
+	} else {
+		log.Printf("[x] Start grpc server")
+		StartGrpc(config)
+	}
 
 	log.Printf("[x] Start web-server")
 	StartHttpServer(mware, config)

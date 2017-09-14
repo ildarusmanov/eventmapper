@@ -36,7 +36,15 @@ func (s *GrpcServer) CreateEvent(ctx context.Context, in *pb.EventRequest) (*pb.
  * start server
  * @param config *configs.Config
  */
-func StartGrpcServer(config *configs.Config) {
+func StartGrpc(config *configs.Config) {
+	go runGrpcServer(config)
+}
+
+/**
+ * start GRPC server listnening for requests
+ * @param  config *configs.Config
+ */
+func runGrpcServer(config *configs.Config) {
 	lis, err := net.Listen("tcp", config.GrpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
