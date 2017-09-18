@@ -17,7 +17,9 @@ func CreateNewJsonOkResponse() *Response {
 	return CreateNewOkResponse("application/json", "UTF-8")
 }
 
-func (resp *Response) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (resp *Response) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	w.Header().Set("Content-Type", resp.contentType+"; charset="+resp.charset)
 	w.WriteHeader(http.StatusOK)
+
+	return true
 }

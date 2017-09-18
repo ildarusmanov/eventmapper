@@ -17,13 +17,13 @@ func main() {
 	config := configs.LoadConfigFile(configFilePath)
 
 	log.Printf("[x] Create router")
-	router := CreateNewRouter(config)
+	routerHandler := CreateNewRouterHandler(config)
 
 	log.Printf("[x] Define middleware")
 	mware := middleware.CreateNewMiddleware()
 	mware.AddHandler(middlewares.CreateNewAuth(config.AuthToken))
 	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
-	mware.AddHandler(router)
+	mware.AddHandler(routerHandler)
 
 	if config.DisableHandlers {
 		log.Printf("[*] Handlers are disabled")

@@ -9,7 +9,21 @@ import (
 	"time"
 )
 
-func CreateNewRouter(config *configs.Config) *mux.Router {
+type RouterHandler struct {
+	router *mux.Router
+}
+
+func CreateNewRouterHandler(config *configs.Config) *RouterHandler {
+	return &RouterHandler{createNewRouter(config)}
+}
+
+func (h *RouterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
+	h.router.ServeHTTP(w,r)
+
+	return true
+}
+
+func createNewRouter(config *configs.Config) *mux.Router {
 	router := mux.NewRouter()
 
 	log.Printf("[x] Create controller")

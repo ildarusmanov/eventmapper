@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"github.com/WajoxSoftware/middleware"
 	"net/http"
 )
 
@@ -13,13 +12,15 @@ func CreateNewAuth(authToken string) *Auth {
 	return &Auth{authToken}
 }
 
-func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	isValidToken := a.AuthToken == r.URL.Query().Get("token")
 
 	if !isValidToken {
 		w.WriteHeader(403)
 		w.Write([]byte("Forbidden"))
 
-		middleware.StopPropagation()
+		return false
 	}
+
+	return true
 }
