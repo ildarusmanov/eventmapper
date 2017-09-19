@@ -1,5 +1,18 @@
 Event mapperservice
 ==========================
+## Setup
+
+1. Install and run RabbitMQ
+2. Install Docker
+3. Clone the repo
+4. Run the following commands:
+
+```
+cd eventmapper
+sudo docker build -t eventmapper .
+sudo docker run -p -d 8000:8000 --network host eventmapper
+sudo docker ps
+```
 
 ## Save some log data
 
