@@ -2,12 +2,13 @@ package models
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"net/http"
-	"errors"
 )
 
-var IncorrectOptions = errors.New("Incorrect options")
+var incorrectJsonHttpHandlerOptionsError = errors.New("Incorrect options")
+
 /**
  * Handler implementation for HTTP JSON handlers
  */
@@ -25,7 +26,7 @@ func (h *JsonHttpHandler) GetOptions() map[string]string {
 
 /**
  * get RabbitMQ connection url
- * @return string 
+ * @return string
  */
 func (h *JsonHttpHandler) GetMqUrl() string {
 	return h.Options["mq_url"]
@@ -40,50 +41,20 @@ func (h *JsonHttpHandler) GetRKey() string {
 }
 
 /**
- * Get handler url
- * @return string
- */
-func (h *JsonHttpHandler) getUrl() string {
-	return h.Options["url"]
-}
-
-/**
- * Check Http BasicAuth is enabled
- * @return bool
- */
-func (h* JsonHttpHandler) hasBasicAuth() bool {
-	_, ok := h.Options["auth_name"]
-
-	return ok
-}
-
-/**
- * Get http basic auth username
- * @return string
- */
-func (h* JsonHttpHandler) getAuthUName() string {
-	return h.Options["auth_uname"]
-}
-
-/**
- * Get http basic auth password
- * @return string
- */
-func (h* JsonHttpHandler) getAuthPwd() string {
-	return h.Options["auth_pwd"]
-}
-
-/**
  * Load options from map
  * @param  options map[string]string
  */
 func (h *JsonHttpHandler) Init() error {
 	if _, ok := h.Options["r_key"]; !ok {
-		return IncorrectOptions
+		return incorrectJsonHttpHandlerOptionsError
 	}
 
 	if _, ok := h.Options["mq_url"]; !ok {
-		return IncorrectOptions
+		return incorrectJsonHttpHandlerOptionsError
+	}
+
+	if _, ok := h.Options["url"]; !ok {
+		return incorrectJsonHttpHandlerOptionsError
 	}
 
 	return nil
@@ -94,23 +65,14 @@ func (h *JsonHttpHandler) Init() error {
  * @param  eventBody   []byte
  */
 func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
-	client := &http.Client{}
-
-	req, err := http.NewRequest(
-		"POST",
-		h.getUrl(),
-		bytes.NewReader(eventBody),
-	)
+	req, err := h.BuildHttpRequest(eventBody)
 
 	if err != nil {
+		log.Printf("[x] %s", err)
+
 		return err
 	}
-
-	if h.hasBasicAuth() {
-		req.SetBasicAuth(h.getAuthUName(), h.getAuthPwd())
-	}
-
-	resp, err := client.Do(req)
+	resp, err := h.SendHttpRequest(req)
 
 	if err != nil {
 		log.Printf("[x] %s", err)
@@ -136,4 +98,72 @@ func (h *JsonHttpHandler) Start() error {
  */
 func (h *JsonHttpHandler) Stop() {
 	return
+}
+
+/**
+ * Create http request
+ * @param  eventBody []byte
+ * @return *http.Request, error
+ */
+func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, error) {
+	req, err := http.NewRequest(
+		"POST",
+		h.getUrl(),
+		bytes.NewReader(eventBody),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if h.hasBasicAuth() {
+		req.SetBasicAuth(h.getAuthUName(), h.getAuthPwd())
+	}
+
+	return req, nil
+}
+
+/**
+ * Send request via http
+ * @param  r *http.Request
+ * @return *http.Response, error
+ */
+func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
+	client := &http.Client{}
+
+	return client.Do(r)
+}
+
+/**
+ * Get handler url
+ * @return string
+ */
+func (h *JsonHttpHandler) getUrl() string {
+	return h.Options["url"]
+}
+
+/**
+ * Check Http BasicAuth is enabled
+ * @return bool
+ */
+func (h *JsonHttpHandler) hasBasicAuth() bool {
+	_, ok := h.Options["auth_name"]
+
+	return ok
+}
+
+/**
+ * Get http basic auth username
+ * @return string
+ */
+func (h *JsonHttpHandler) getAuthUName() string {
+	return h.Options["auth_uname"]
+}
+
+/**
+ * Get http basic auth password
+ * @return string
+ */
+func (h *JsonHttpHandler) getAuthPwd() string {
+	return h.Options["auth_pwd"]
 }

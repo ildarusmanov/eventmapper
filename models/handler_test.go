@@ -11,10 +11,10 @@ import (
 
 func TestCreateNewHandlerWithValidOptions(t *testing.T) {
 	o := map[string]string{
-		"mq_url": "mq_url",
-		"r_key": "r_key",
+		"mq_url":       "mq_url",
+		"r_key":        "r_key",
 		"handler_type": "http_json",
-		"url": "url",
+		"url":          "url",
 	}
 
 	h, err := CreateNewHandler(o)
@@ -53,10 +53,10 @@ func TestPublishNListening(t *testing.T) {
 	if err != nil {
 		t.Error("Can not create channel")
 	}
-
 	// create test http server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		r
 	}))
 	defer ts.Close()
 

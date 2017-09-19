@@ -15,6 +15,7 @@ type Event interface {
 	GetEventName() string
 	GetBody() ([]byte, error)
 	Publish(EventChannel, string) error
+	Validate() error
 }
 
 type EventChannel interface {
