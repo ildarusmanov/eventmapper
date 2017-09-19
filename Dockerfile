@@ -3,14 +3,18 @@
 FROM golang:1.8
 
 # Copy the local package files to the container's workspace.
-ADD . /go/src/eventmapper
+COPY . /go/src/eventmapper
 
 # setup dependencies
 RUN go get github.com/WajoxSoftware/middleware
-RUN go get gopkg.in/mgo.v2
+RUN go get github.com/streadway/amqp
 RUN go get github.com/gorilla/mux
 RUN go get gopkg.in/validator.v2
 RUN go get gopkg.in/yaml.v2
+RUN go get golang.org/x/net/context
+RUN go get github.com/golang/protobuf/proto
+RUN go get google.golang.org/grpc
+
 
 RUN go install eventmapper
 
