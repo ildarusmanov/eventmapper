@@ -22,5 +22,5 @@ RUN go install eventmapper
 # Run the command by default when the container starts.
 ENTRYPOINT /go/bin/eventmapper /go/src/eventmapper/config.yml
 
-# Document that the service listens on port 8080.
+# Document that the service listens on port 8000.
 EXPOSE 8000

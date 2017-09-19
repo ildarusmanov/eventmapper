@@ -10,7 +10,11 @@ Event mapperservice
 ```
 cd eventmapper
 sudo docker build -t eventmapper .
-sudo docker run -d -p 8000:8000 --network host eventmapper
+// prod
+sudo docker run -d -p 10.90.137.73:8000:8000 eventmapper
+// or dev
+sudo docker run -p 8000:8000 --network bridge eventmapper
+// list containers
 sudo docker ps
 ```
 
