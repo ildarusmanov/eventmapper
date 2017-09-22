@@ -53,7 +53,7 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
  * @param isOk bool
  */
 func (c *EventController) sendJsonResponse(w http.ResponseWriter, isOk bool, status string) {
-	response := models.CreateNewJsonResponse(true, "ok")
+	response := models.CreateNewJsonResponse(isOk, status)
 
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		panic(err)
