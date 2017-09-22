@@ -35,12 +35,12 @@ func (c *EventController) CreateHandler(w http.ResponseWriter, r *http.Request) 
 	rKey := vars["r_key"]
 
 	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-		c.sendJsonResponse(w, false, "decode error")
+		c.sendJsonResponse(w, false, err.Error())
 		return
 	}
 
 	if _, err := services.PublishEvent(event, c.mqUrl, rKey); err != nil {
-		c.sendJsonResponse(w, false, "publish error")
+		c.sendJsonResponse(w, false, err.Error())
 		return
 	}
 
