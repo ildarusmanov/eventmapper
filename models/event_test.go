@@ -33,7 +33,7 @@ func createValidEvent() mq.Event {
 	validEvent.EventName = "authorized"
 	validEvent.EventTarget = "user"
 	validEvent.UserId = "some-user-id"
-	validEvent.CreatedAt = time.Now().Unix()
+	validEvent.CreatedAt = int32(time.Now().Unix())
 	validEvent.Params = map[string]string{"key1": "value1"}
 
 	return validEvent
