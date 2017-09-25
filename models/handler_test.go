@@ -56,7 +56,6 @@ func TestPublishNListening(t *testing.T) {
 	// create test http server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		r
 	}))
 	defer ts.Close()
 
@@ -76,6 +75,6 @@ func TestPublishNListening(t *testing.T) {
 	close(closeCh)
 
 	if err != nil {
-		t.Error("Can not pubslish event", err)
+		t.Error("Can not publish event", err)
 	}
 }

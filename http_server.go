@@ -18,7 +18,7 @@ func CreateNewRouterHandler(config *configs.Config) *RouterHandler {
 }
 
 func (h *RouterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
-	h.router.ServeHTTP(w,r)
+	h.router.ServeHTTP(w, r)
 
 	return true
 }
