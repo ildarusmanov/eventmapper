@@ -26,7 +26,7 @@ func TestValidCreateHandler(t *testing.T) {
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/create/apply.events.new_user", inBody)
+	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/apply.events.new_user/events", inBody)
 
 	controller.CreateHandler(w, r)
 
@@ -58,7 +58,7 @@ func TestInvalidCreateHandler(t *testing.T) {
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/create/apply.events.new_user", inBody)
+	r := httptest.NewRequest("POST", "http://127.0.0.1:8000/apply.events.new_user/events", inBody)
 
 	controller.CreateHandler(w, r)
 

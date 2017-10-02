@@ -30,7 +30,7 @@ func createNewRouter(config *configs.Config) *mux.Router {
 	controller := controllers.CreateNewEventController(config.MqUrl)
 
 	log.Printf("[x] Define routes")
-	router.HandleFunc("/create/{r_key}", controller.CreateHandler).Methods("POST")
+	router.HandleFunc("/{r_key}/events", controller.CreateHandler).Methods("POST")
 
 	return router
 }
