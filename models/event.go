@@ -11,7 +11,7 @@ type Event struct {
 	EventTarget string            `validate:"min=1,max=255"`
 	UserId      string            `validate:"min=1,max=100"`
 	CreatedAt   int32             `validate:"nonzero,min=1"`
-	Params      map[string]string `validate:"max=100"`
+	Params      map[string]string `validate:"max=200"`
 }
 
 func CreateNewEvent() *Event {
