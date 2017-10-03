@@ -21,8 +21,8 @@ sudo docker ps
 ## Save some log data
 
 ```
-# POST /create/{queue_key}?token={token}
-# e.g. POST /create/mysite?token=super-token
+# POST /{queue_key}/events?token={token}
+# e.g. POST /mysite/events?token=super-token
 {
    "EventName":"view-page",
    "EventTarget":"sdfsd",
