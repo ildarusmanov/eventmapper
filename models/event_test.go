@@ -30,6 +30,9 @@ func (ch *eventChannelMock) Close() {
 
 func createValidEvent() mq.Event {
 	validEvent := CreateNewEvent()
+	validEvent.SenderName = "sender"
+	validEvent.SourceType = "none"
+	validEvent.SourceId = "none"
 	validEvent.EventName = "authorized"
 	validEvent.EventTarget = "user"
 	validEvent.UserId = "some-user-id"

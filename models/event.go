@@ -7,6 +7,9 @@ import (
 )
 
 type Event struct {
+	SenderName  string            `validate:"nonzero,min=1,max=255"`
+	SourceId    string            `validate:"nonzero,min=1,max=255"`
+	SourceType  string            `validate:"nonzero,min=1,max=255"`
 	EventName   string            `validate:"nonzero,min=1,max=255"`
 	EventTarget string            `validate:"min=1,max=255"`
 	UserId      string            `validate:"min=1,max=100"`
@@ -18,8 +21,8 @@ func CreateNewEvent() *Event {
 	return &Event{}
 }
 
-func BuildNewEvent(EventName, EventTarget, UserId string, CreatedAt int32, Params map[string]string) *Event {
-	return &Event{EventName, EventTarget, UserId, CreatedAt, Params}
+func BuildNewEvent(SenderName, SourceId, SourceType, EventName, EventTarget, UserId string, CreatedAt int32, Params map[string]string) *Event {
+	return &Event{SenderName, SourceId, SourceType, EventName, EventTarget, UserId, CreatedAt, Params}
 }
 
 func (e *Event) Publish(ch mq.EventChannel, rKey string) error {

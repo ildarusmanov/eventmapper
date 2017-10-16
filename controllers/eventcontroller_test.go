@@ -22,7 +22,7 @@ func TestValidCreateHandler(t *testing.T) {
 
 	controller := CreateNewEventController(config.MqUrl)
 
-	bodyJson := "{\"EventName\": \"authorized\", \"EventTarget\": \"user\", \"UserId\": \"some-user-id\", \"CreatedAt\": 1712311}"
+	bodyJson := "{\"SenderName\": \"Noname\", \"SourceId\": \"self\", \"SourceType\": \"self\", \"EventName\": \"authorized\", \"EventTarget\": \"user\", \"UserId\": \"some-user-id\", \"CreatedAt\": 1712311}"
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
