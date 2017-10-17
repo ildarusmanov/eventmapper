@@ -24,14 +24,28 @@ sudo docker ps
 # POST /{queue_key}/events?token={token}
 # e.g. POST /mysite/events?token=super-token
 {
-   "EventName":"view-page",
-   "EventTarget":"sdfsd",
-   "UserId":"1",
-   "CreatedAt":1503489779,
-   "Params":{
-      "userAgent":"Mozilla\/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko\/20100101 Firefox\/54.0",
-      "userIP":"127.0.0.1"
-   }
+	"source": {
+		"source_id": "example.com",
+		"source_type": "http",
+		"origin": "/api/v1/endpoint/1.json",
+		"params": {
+			"format": "json"
+		}
+	},
+	"target": {
+		"target_type": "User",
+		"target_id": "1",
+		"params": {
+			"email": "test@email.com"
+		}
+	},
+	"event_name": "authorized",
+	"user_id": "1",
+	"created_at": 1712311,
+	"params": {
+    	"userAgent":"Mozilla\/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko\/20100101 Firefox\/54.0",
+    	"userIP":"127.0.0.1"
+	}
 }
 
 ```
