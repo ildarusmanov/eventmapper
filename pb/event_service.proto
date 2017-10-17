@@ -4,15 +4,26 @@ service EventMapper {
 	rpc CreateEvent(EventRequest) returns (EventResponse) {}
 }
 
-message Event {
-	string sender_name = 1;
+message EventTarget {
+	string target_type = 1;
+	string target_id = 2;
+	map<string, string> params = 3;
+}
+
+message EventSource {
+	string source_type = 1;
 	string source_id = 2;
-	string source_type = 3;
-	string event_name = 4;
-	string event_target = 5;
-	string user_id = 6;
-	int32 created_at = 7;
-	map<string, string> params = 8;
+	string origin = 3;
+	map<string, string> params = 4;
+}
+
+message Event {
+	EventSource	source = 1;
+	EventTarget target = 2;
+	string event_name = 3;
+	string user_id = 4;
+	int32 created_at = 5;
+	map<string, string> params = 6;
 }
 
 message EventRequest {
