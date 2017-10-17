@@ -42,3 +42,8 @@ sudo docker ps
 cd {project_directory}
 go test ./models ./controllers ./mq
 ```
+
+## Todo
+
+* Increase test coverage
+* Add different auth models
