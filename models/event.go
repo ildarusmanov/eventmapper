@@ -7,19 +7,20 @@ import (
 )
 
 type Event struct {
-	EventName   string            `validate:"nonzero,min=1,max=255"`
-	EventTarget string            `validate:"min=1,max=255"`
-	UserId      string            `validate:"min=1,max=100"`
-	CreatedAt   int32             `validate:"nonzero,min=1"`
-	Params      map[string]string `validate:"max=200"`
+	Source    *EventSource            `validate:"nonzero" json:"source,omitempty"`
+	Target    *EventTarget           `validate:"nonzero" json:"target,omitempty"`
+	EventName string            `validate:"nonzero,min=1,max=255" json:"event_name,omitempty"`
+	UserId      string            `validate:"min=1,max=100" json:"user_id,omitempty"`
+	CreatedAt   int32             `validate:"nonzero,min=1" json:"created_at,omitempty"`
+	Params      map[string]string `validate:"max=200" json:"params,omitempty"`
 }
 
 func CreateNewEvent() *Event {
 	return &Event{}
 }
 
-func BuildNewEvent(EventName, EventTarget, UserId string, CreatedAt int32, Params map[string]string) *Event {
-	return &Event{EventName, EventTarget, UserId, CreatedAt, Params}
+func BuildNewEvent(source *EventSource, target *EventTarget, senderId, eventName, userId string, createdAt int32, params map[string]string) *Event {
+	return &Event{source, target, eventName, userId, createdAt, params}
 }
 
 func (e *Event) Publish(ch mq.EventChannel, rKey string) error {

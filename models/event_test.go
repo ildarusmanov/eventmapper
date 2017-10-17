@@ -30,8 +30,9 @@ func (ch *eventChannelMock) Close() {
 
 func createValidEvent() mq.Event {
 	validEvent := CreateNewEvent()
+	validEvent.Source = CreateNewEventSource("type", "id", "origin", map[string]string{"key1": "value1"})
+	validEvent.Target = CreateNewEventTarget("type", "id", map[string]string{"key1": "value1"})
 	validEvent.EventName = "authorized"
-	validEvent.EventTarget = "user"
 	validEvent.UserId = "some-user-id"
 	validEvent.CreatedAt = int32(time.Now().Unix())
 	validEvent.Params = map[string]string{"key1": "value1"}

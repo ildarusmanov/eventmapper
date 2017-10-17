@@ -22,7 +22,24 @@ func TestValidCreateHandler(t *testing.T) {
 
 	controller := CreateNewEventController(config.MqUrl)
 
-	bodyJson := "{\"EventName\": \"authorized\", \"EventTarget\": \"user\", \"UserId\": \"some-user-id\", \"CreatedAt\": 1712311}"
+	bodyJson := `{
+		"source": {
+			"source_id": "example.com",
+			"source_type": "http",
+			"origin": "/api/v1/endpoint/1.json",
+			"params": {}
+		},
+		"target": {
+			"target_type": "User",
+			"target_id": "1",
+			"params": {}
+		},
+		"event_name": "authorized",
+		"user_id": "1",
+		"created_at": 1712311,
+		"params": {}
+	}`
+
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
@@ -54,7 +71,7 @@ func TestInvalidCreateHandler(t *testing.T) {
 
 	controller := CreateNewEventController(config.MqUrl)
 
-	bodyJson := "{\"EventName\": 1, 1712311}"
+	bodyJson := `{"EventName": 1, 1712311}`
 	inBody := bytes.NewBufferString(bodyJson)
 
 	w := httptest.NewRecorder()
