@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"eventmapper/mq"
+	"github.com/streadway/amqp"
 	"log"
 )
 
@@ -21,6 +22,7 @@ type Handler interface {
 	GetOptions() map[string]string
 	GetMqUrl() string
 	GetRKey() string
+	GetPCount() int
 }
 
 /**
@@ -96,7 +98,17 @@ func StartHandler(options map[string]string, closeCh chan bool) error {
 		return err
 	}
 
-	log.Printf("[x] Start listener")
+	for i := 0; i < h.GetPCount(); i++ {
+		go RunHandlerProcess(h, msgs, closeCh)
+	}
+
+	<-closeCh
+
+	return nil
+}
+
+func RunHandlerProcess(h Handler, msgs <-chan amqp.Delivery, closeCh chan bool) {
+	log.Printf("[x] Start listener process")
 
 	for m := range msgs {
 		log.Printf("[x] %s", m.Body)
@@ -104,13 +116,11 @@ func StartHandler(options map[string]string, closeCh chan bool) error {
 		select {
 		case c := <-closeCh:
 			log.Printf("[x] %s", c)
-			return nil
+			return
 		default:
 			log.Printf("[x] error: %s", h.ProcessMessage(m.Body))
 		}
 	}
 
-	log.Printf("[x] Finish listener")
-
-	return nil
+	log.Printf("[x] Finish listener process")
 }

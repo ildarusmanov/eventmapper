@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
 	"errors"
 	"eventmapper/pb"
 	"golang.org/x/net/context"
@@ -40,6 +41,20 @@ func (h *GrpcHandler) GetMqUrl() string {
  */
 func (h *GrpcHandler) GetRKey() string {
 	return h.Options["r_key"]
+}
+
+/**
+ * Get processes count
+ * @return int
+ */
+func (h *GrpcHandler) GetPCount() int {
+	i, err := strconv.Atoi(h.Options["p_count"])
+
+	if err != nil {
+		return 1
+	}
+
+	return i
 }
 
 /**

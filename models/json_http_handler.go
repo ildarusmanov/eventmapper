@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"bytes"
 	"errors"
 	"log"
@@ -38,6 +39,20 @@ func (h *JsonHttpHandler) GetMqUrl() string {
  */
 func (h *JsonHttpHandler) GetRKey() string {
 	return h.Options["r_key"]
+}
+
+/**
+ * Get processes count
+ * @return int
+ */
+func (h *JsonHttpHandler) GetPCount() int {
+	i, err := strconv.Atoi(h.Options["p_count"])
+
+	if err != nil {
+		return 1
+	}
+
+	return i
 }
 
 /**
