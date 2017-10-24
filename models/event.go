@@ -19,7 +19,7 @@ func CreateNewEvent() *Event {
 	return &Event{}
 }
 
-func BuildNewEvent(source *EventSource, target *EventTarget, senderId, eventName, userId string, createdAt int32, params map[string]string) *Event {
+func BuildNewEvent(source *EventSource, target *EventTarget, eventName, userId string, createdAt int32, params map[string]string) *Event {
 	return &Event{source, target, eventName, userId, createdAt, params}
 }
 

@@ -85,15 +85,15 @@ func createNewGrpcServer(mqUrl string) *GrpcServer {
 func (s *GrpcServer) publishEvent(rKey string, pbEvent *pb.Event) (mq.Event, error) {
 	event := models.BuildNewEvent(
 		models.CreateNewEventSource(
-			pbEvent.GetSourceType(),
-			pbEvent.GetSourceId(),
-			pbEvent.GetSourceOrigin().
-			pbEvent.GetSourceParams()
+			pbEvent.GetSource().GetSourceType(),
+			pbEvent.GetSource().GetSourceId(),
+			pbEvent.GetSource().GetOrigin(),
+			pbEvent.GetSource().GetParams(),
 		),
 		models.CreateNewEventTarget(
-			pbEvent.GetTargetType(),
-			pbEvent.GetTargetId(),
-			pbEvent.GetTargetParams()
+			pbEvent.GetTarget().GetTargetType(),
+			pbEvent.GetTarget().GetTargetId(),
+			pbEvent.GetTarget().GetParams(),
 		),
 		pbEvent.GetEventName(),
 		pbEvent.GetUserId(),
