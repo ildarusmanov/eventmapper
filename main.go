@@ -75,5 +75,5 @@ func main() {
 	}
 
 	log.Printf("[x] Start web-server")
-	StartHttpServer(mware, config)
+	StartHttpsServer(mware, config)
 }

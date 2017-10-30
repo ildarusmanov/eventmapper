@@ -7,6 +7,8 @@ import (
 
 type Config struct {
 	ServerHost      string              `yaml:"server_host"`
+	ServerTLSCrt    string              `yaml:"server_tls_crt"`
+	ServerTLSKey    string              `yaml:"server_tls_key"`
 	MqUrl           string              `yaml:"mq_url"`
 	AuthToken       string              `yaml:"auth_token"`
 	DisableGrpc     bool                `yaml:"disable_grpc"`
