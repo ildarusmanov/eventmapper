@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"crypto/tls"
 )
 
 var incorrectJsonHttpHandlerOptionsError = errors.New("Incorrect options")
@@ -53,6 +54,20 @@ func (h *JsonHttpHandler) GetPCount() int {
 	}
 
 	return i
+}
+
+/**
+ * Get TLS flag
+ * @return bool
+ */
+func (h *JsonHttpHandler) GetTLS() bool {
+	b, err := strconv.ParseBool(h.Options["TLS"])
+
+	if err != nil {
+		return false
+	}
+
+	return b
 }
 
 /**
@@ -144,7 +159,11 @@ func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, err
  * @return *http.Response, error
  */
 func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
-	client := &http.Client{}
+    tr := &http.Transport{
+        TLSClientConfig: &tls.Config{InsecureSkipVerify: h.GetTLS()},
+    }
+
+	client := &http.Client{Transport: tr}
 
 	return client.Do(r)
 }

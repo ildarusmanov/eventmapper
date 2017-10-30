@@ -7,6 +7,8 @@ mq_handlers:
     r_key: "apply.*"
     handler_type: "http_json"
     url: "http://0.0.0.0:5000"
+    p_count: "2"
+    TLS: "false"
 disable_grpc: true
 grpc_addr: ":5111"
 grpc_tls: false

@@ -3,12 +3,12 @@ package main
 import (
 	"eventmapper/configs"
 	"eventmapper/middlewares"
-	"github.com/WajoxSoftware/middleware"
-	"runtime"
 	"flag"
-	"runtime/pprof"
+	"github.com/WajoxSoftware/middleware"
 	"log"
 	"os"
+	"runtime"
+	"runtime/pprof"
 )
 
 var configfile = flag.String("configfile", "config.yml", "load config from `file`")
@@ -16,29 +16,29 @@ var cpuprofile = flag.String("cpuprofile", "pprof/cpu.pprof", "write cpu profile
 var memprofile = flag.String("memprofile", "pprof/mem.mprof", "write memory profile to `file`")
 
 func main() {
-    flag.Parse()
-    if *cpuprofile != "" {
-        f, err := os.Create(*cpuprofile)
-        if err != nil {
-            log.Fatal("could not create CPU profile: ", err)
-        }
-        if err := pprof.StartCPUProfile(f); err != nil {
-            log.Fatal("could not start CPU profile: ", err)
-        }
-        defer pprof.StopCPUProfile()
-    }
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal("could not create CPU profile: ", err)
+		}
+		if err := pprof.StartCPUProfile(f); err != nil {
+			log.Fatal("could not start CPU profile: ", err)
+		}
+		defer pprof.StopCPUProfile()
+	}
 
-    if *memprofile != "" {
-        f, err := os.Create(*memprofile)
-        if err != nil {
-            log.Fatal("could not create memory profile: ", err)
-        }
-        runtime.GC() // get up-to-date statistics
-        if err := pprof.WriteHeapProfile(f); err != nil {
-            log.Fatal("could not write memory profile: ", err)
-        }
-        f.Close()
-    }
+	if *memprofile != "" {
+		f, err := os.Create(*memprofile)
+		if err != nil {
+			log.Fatal("could not create memory profile: ", err)
+		}
+		runtime.GC() // get up-to-date statistics
+		if err := pprof.WriteHeapProfile(f); err != nil {
+			log.Fatal("could not write memory profile: ", err)
+		}
+		f.Close()
+	}
 
 	log.Printf("[x] Starting application...")
 
