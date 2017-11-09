@@ -15,12 +15,11 @@ RUN go get golang.org/x/net/context
 RUN go get github.com/golang/protobuf/proto
 RUN go get google.golang.org/grpc
 
-
 RUN go install eventmapper
 
-
+VOLUME ["/var/log/eventmapper"]
 # Run the command by default when the container starts.
-ENTRYPOINT /go/bin/eventmapper /go/src/eventmapper/config.yml
+ENTRYPOINT /go/bin/eventmapper /var/log/eventmapper/log.txt /go/src/eventmapper/config.yml
 
 # Document that the service listens on port 8000.
 EXPOSE 8000

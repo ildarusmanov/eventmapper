@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+        "crypto/tls"
 )
 
 var incorrectJsonHttpHandlerOptionsError = errors.New("Incorrect options")
@@ -129,7 +130,11 @@ func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, err
  * @return *http.Response, error
  */
 func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
-	client := &http.Client{}
+        tr := &http.Transport{
+                TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+        }
+
+	client := &http.Client{Transport: tr}
 
 	return client.Do(r)
 }
