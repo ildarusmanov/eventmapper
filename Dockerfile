@@ -23,3 +23,6 @@ ENTRYPOINT /go/bin/eventmapper /var/log/eventmapper/log.txt /go/src/eventmapper/
 
 # Document that the service listens on port 8000.
 EXPOSE 8000
+
+# Environment variables
+ENV GOGC 50
