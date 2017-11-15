@@ -102,8 +102,7 @@ func StartHandler(options map[string]string, closeCh chan bool) error {
 		log.Printf("[x] %s", m.Body)
 
 		select {
-		case c := <-closeCh:
-			log.Printf("[x] %s", c)
+		case <-closeCh:
 			return nil
 		default:
 			log.Printf("[x] error: %s", h.ProcessMessage(m.Body))

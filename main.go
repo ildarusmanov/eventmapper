@@ -10,14 +10,14 @@ import (
 )
 
 func main() {
-        // setup log file
-        logFilePath, _ := filepath.Abs(os.Args[1]);
-	f, err := os.OpenFile(logFilePath, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-        if err != nil {
-            log.Fatal(err)
-        }
-        defer f.Close()
-        log.SetOutput(f)
+	// setup log file
+	logFilePath, _ := filepath.Abs(os.Args[1])
+	f, err := os.OpenFile(logFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
 
 	log.Printf("[x] Starting application...")
 

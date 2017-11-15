@@ -2,10 +2,10 @@ package models
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"log"
 	"net/http"
-        "crypto/tls"
 )
 
 var incorrectJsonHttpHandlerOptionsError = errors.New("Incorrect options")
@@ -75,6 +75,8 @@ func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
 	}
 	resp, err := h.SendHttpRequest(req)
 
+	defer resp.Body.Close()
+
 	if err != nil {
 		log.Printf("[x] %s", err)
 
@@ -130,9 +132,9 @@ func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, err
  * @return *http.Response, error
  */
 func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
-        tr := &http.Transport{
-                TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-        }
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
 	client := &http.Client{Transport: tr}
 
