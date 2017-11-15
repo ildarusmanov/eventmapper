@@ -110,6 +110,8 @@ func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
 		return err
 	}
 
+	defer resp.Body.Close()
+
 	log.Printf("[x] POST %s", h.getUrl(), resp.Status)
 
 	return err
