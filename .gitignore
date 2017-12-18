@@ -3,3 +3,4 @@ eventmapper
 config.yml
 pprof/*
 tls/*
+vendor/*

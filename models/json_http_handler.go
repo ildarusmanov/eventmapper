@@ -26,12 +26,22 @@ func (h *JsonHttpHandler) GetOptions() map[string]string {
 	return h.Options
 }
 
+func (h *JsonHttpHandler) getOptionByKey(key string) (string, error) {
+	if _, ok := h.Options[key]; !ok {
+		return "", incorrectJsonHttpHandlerOptionsError
+	}
+
+	return h.Options[key], nil
+}
+
 /**
  * get RabbitMQ connection url
  * @return string
  */
 func (h *JsonHttpHandler) GetMqUrl() string {
-	return h.Options["mq_url"]
+	v, _ := h.getOptionByKey("mq_url")
+
+	return v
 }
 
 /**
@@ -39,7 +49,9 @@ func (h *JsonHttpHandler) GetMqUrl() string {
  * @return string
  */
 func (h *JsonHttpHandler) GetRKey() string {
-	return h.Options["r_key"]
+	v, _ := h.getOptionByKey("r_key")
+
+	return v
 }
 
 /**
@@ -47,27 +59,39 @@ func (h *JsonHttpHandler) GetRKey() string {
  * @return int
  */
 func (h *JsonHttpHandler) GetPCount() int {
-	i, err := strconv.Atoi(h.Options["p_count"])
+	pCountStr, err := h.getOptionByKey("p_count")
 
 	if err != nil {
 		return 1
 	}
 
-	return i
+	pCountInt, err := strconv.Atoi(pCountStr)
+
+	if err != nil {
+		return 1
+	}
+
+	return pCountInt
 }
 
 /**
  * Get TLS flag
  * @return bool
  */
-func (h *JsonHttpHandler) GetTLS() bool {
-	b, err := strconv.ParseBool(h.Options["TLS"])
+func (h *JsonHttpHandler) getTLS() (bool, error) {
+	tlsStr, err := h.getOptionByKey("TLS")
 
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return b
+	tlsBool, err := strconv.ParseBool(tlsStr)
+
+	if err != nil {
+		return false, err
+	}
+
+	return tlsBool, nil
 }
 
 /**
@@ -75,16 +99,16 @@ func (h *JsonHttpHandler) GetTLS() bool {
  * @param  options map[string]string
  */
 func (h *JsonHttpHandler) Init() error {
-	if _, ok := h.Options["r_key"]; !ok {
-		return incorrectJsonHttpHandlerOptionsError
+	if _, err := h.getOptionByKey("r_key"); err != nil {
+		return err
 	}
 
-	if _, ok := h.Options["mq_url"]; !ok {
-		return incorrectJsonHttpHandlerOptionsError
+	if _, err := h.getOptionByKey("mq_url"); err != nil {
+		return err
 	}
 
-	if _, ok := h.Options["url"]; !ok {
-		return incorrectJsonHttpHandlerOptionsError
+	if _, err := h.getOptionByKey("url"); err != nil {
+		return err
 	}
 
 	return nil
@@ -95,14 +119,14 @@ func (h *JsonHttpHandler) Init() error {
  * @param  eventBody   []byte
  */
 func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
-	req, err := h.BuildHttpRequest(eventBody)
+	req, err := h.buildHttpRequest(eventBody)
 
 	if err != nil {
 		log.Printf("[x] %s", err)
 
 		return err
 	}
-	resp, err := h.SendHttpRequest(req)
+	resp, err := h.sendHttpRequest(req)
 
 	if err != nil {
 		log.Printf("[x] %s", err)
@@ -112,7 +136,7 @@ func (h *JsonHttpHandler) ProcessMessage(eventBody []byte) error {
 
 	defer resp.Body.Close()
 
-	log.Printf("[x] POST %s", h.getUrl(), resp.Status)
+	log.Printf("[x] POST %s", req.URL.String(), resp.Status)
 
 	return err
 }
@@ -137,10 +161,16 @@ func (h *JsonHttpHandler) Stop() {
  * @param  eventBody []byte
  * @return *http.Request, error
  */
-func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, error) {
+func (h *JsonHttpHandler) buildHttpRequest(eventBody []byte) (*http.Request, error) {
+	url, err := h.getUrl()
+
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest(
 		"POST",
-		h.getUrl(),
+		url,
 		bytes.NewReader(eventBody),
 	)
 
@@ -148,9 +178,7 @@ func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, err
 		return nil, err
 	}
 
-	if h.hasBasicAuth() {
-		req.SetBasicAuth(h.getAuthUName(), h.getAuthPwd())
-	}
+	h.setAuthData(req)
 
 	return req, nil
 }
@@ -160,9 +188,15 @@ func (h *JsonHttpHandler) BuildHttpRequest(eventBody []byte) (*http.Request, err
  * @param  r *http.Request
  * @return *http.Response, error
  */
-func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, error) {
+func (h *JsonHttpHandler) sendHttpRequest(r *http.Request) (*http.Response, error) {
+    hasTls, err := h.getTLS()
+
+    if err != nil {
+    	return nil, err
+    }
+
     tr := &http.Transport{
-        TLSClientConfig: &tls.Config{InsecureSkipVerify: h.GetTLS()},
+        TLSClientConfig: &tls.Config{InsecureSkipVerify: hasTls},
     }
 
 	client := &http.Client{Transport: tr}
@@ -174,32 +208,87 @@ func (h *JsonHttpHandler) SendHttpRequest(r *http.Request) (*http.Response, erro
  * Get handler url
  * @return string
  */
-func (h *JsonHttpHandler) getUrl() string {
-	return h.Options["url"]
+func (h *JsonHttpHandler) getUrl() (string, error) {
+	return h.getOptionByKey("url")
 }
 
 /**
- * Check Http BasicAuth is enabled
- * @return bool
+ * get authentication type
+ * @return string, error
  */
-func (h *JsonHttpHandler) hasBasicAuth() bool {
-	_, ok := h.Options["auth_name"]
-
-	return ok
+func (h *JsonHttpHandler) getAuthType() (string, error) {
+	return h.getOptionByKey("auth_type")
 }
 
 /**
- * Get http basic auth username
- * @return string
+ * add auth data into HTTP request
+ * @param  *http.Request
  */
-func (h *JsonHttpHandler) getAuthUName() string {
-	return h.Options["auth_uname"]
+func (h *JsonHttpHandler) setAuthData(req *http.Request) {
+	if _, err := h.getAuthType(); err != nil {
+		return
+	}
+
+	switch authType, _ := h.getAuthType(); authType {
+	case "http-basic":
+		h.setHttpBasicAuthData(req)
+	case "get-token":
+		h.setGetTokenAuthData(req)
+	case "header-token":
+		h.setHeaderTokenAuthData(req)
+	}
 }
 
-/**
- * Get http basic auth password
- * @return string
- */
-func (h *JsonHttpHandler) getAuthPwd() string {
-	return h.Options["auth_pwd"]
+func (h *JsonHttpHandler) setHttpBasicAuthData(req *http.Request) error {
+    username, err := h.getOptionByKey("username")
+
+    if err != nil {
+    	return err
+    }
+
+    password, err := h.getOptionByKey("username")
+
+    if err != nil {
+    	return err
+    }
+
+    req.SetBasicAuth(username, password)
+
+    return nil
+}
+
+func (h *JsonHttpHandler) setGetTokenAuthData(req *http.Request) error {
+	tokenValue, err := h.getOptionByKey("token_value")
+
+	if err != nil {
+		return err
+	}
+
+	tokenName, err := h.getOptionByKey("token_name")
+
+	if err != nil {
+		return err
+	}
+
+	req.URL.Query().Set(tokenName, tokenValue)
+
+	return nil
+}
+
+func (h *JsonHttpHandler) setHeaderTokenAuthData(req *http.Request) error {
+	tokenValue, err := h.getOptionByKey("token_value")
+
+	if err != nil {
+		return err
+	}
+
+	tokenHeader, err := h.getOptionByKey("token_header")
+
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set(tokenHeader, tokenValue)
+
+	return nil
 }

@@ -35,7 +35,7 @@ func createNewRouter(config *configs.Config) *mux.Router {
 	return router
 }
 
-func StartHttpsServer(handler http.Handler, config *configs.Config) {
+func StartHttpsServer(handler http.Handler, config *configs.Config) *http.Server {
 	srv := &http.Server{
 		Handler: handler,
 		Addr:    config.ServerHost,
@@ -44,5 +44,9 @@ func StartHttpsServer(handler http.Handler, config *configs.Config) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Fatal(srv.ListenAndServeTLS(config.ServerTLSCrt, config.ServerTLSKey, nil))
+	go func() {
+		log.Fatal(srv.ListenAndServeTLS(config.ServerTLSCrt, config.ServerTLSKey))
+	}()
+
+	return srv
 }

@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"eventmapper/configs"
 	"eventmapper/middlewares"
 	"flag"
 	"github.com/WajoxSoftware/middleware"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
 	"runtime"
 	"runtime/pprof"
 )
@@ -16,6 +19,10 @@ var cpuprofile = flag.String("cpuprofile", "pprof/cpu.pprof", "write cpu profile
 var memprofile = flag.String("memprofile", "pprof/mem.mprof", "write memory profile to `file`")
 
 func main() {
+	closeCh := make(chan bool)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
 	flag.Parse()
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
@@ -55,7 +62,7 @@ func main() {
 
 	log.Printf("[x] Define middleware")
 	mware := middleware.CreateNewMiddleware()
-	mware.AddHandler(middlewares.CreateNewAuth(config.AuthToken))
+	mware.AddHandler(middlewares.CreateNewAuth(config.HttpAuthType, config.HttpAuthParams))
 	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
 	mware.AddHandler(routerHandler)
 
@@ -63,7 +70,6 @@ func main() {
 		log.Printf("[*] Handlers are disabled")
 	} else {
 		log.Printf("[x] Start events listener")
-		closeCh := make(chan bool)
 		BindEventsHandlers(config, closeCh)
 	}
 
@@ -74,6 +80,19 @@ func main() {
 		StartGrpc(config)
 	}
 
-	log.Printf("[x] Start web-server")
-	StartHttpsServer(mware, config)
+	var httpServer *http.Server
+	if config.DisableHttp {
+		log.Printf("[*] Http is disabled")
+	} else {
+		log.Printf("[x] Start http server")
+		httpServer = StartHttpsServer(mware, config)
+	}
+
+	<-stop
+
+	closeCh <- true
+
+	if httpServer != nil {
+		httpServer.Shutdown(context.Background())
+	}
 }
