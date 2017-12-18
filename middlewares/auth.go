@@ -5,22 +5,30 @@ import (
 )
 
 type Auth struct {
-	AuthToken string
+	authType   string
+	authParams map[string]string
 }
 
-func CreateNewAuth(authToken string) *Auth {
-	return &Auth{authToken}
+func CreateNewAuth(authType string, authParams map[string]string) *Auth {
+	return &Auth{authType, authParams}
 }
 
 func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
-	isValidToken := a.AuthToken == r.URL.Query().Get("token")
+	isValid := false
 
-	if !isValidToken {
-		w.WriteHeader(403)
-		w.Write([]byte("Forbidden"))
-
-		return false
+	switch a.authType {
+	case "get-token":
+		isValid = a.authParams["token"] == r.URL.Query().Get("token")
+	case "header-token":
+		isValid = a.authParams["token"] == r.Header.Get("Auth-Token")
 	}
 
-	return true
+	if isValid {
+		return true
+	}
+
+	w.WriteHeader(403)
+	w.Write([]byte("Forbidden"))
+
+	return false
 }
