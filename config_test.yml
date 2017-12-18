@@ -1,16 +1,22 @@
 server_host: "127.0.0.1:8000"
-server_tls_crt: "tls/cert.pem"
-server_tls_key: "tls/key.pem"
-auth_token: "super-token"
+server_tls_crt: "tls/server.crt"
+server_tls_key: "tls/server.key"
+disable_http: false
+http_auth_type: "header-token"
+http_auth_params:
+  token: "super-token"
 disable_handlers: false
 mq_url: "amqp://guest:guest@localhost:5672"
 mq_handlers:
   - mq_url: "amqp://guest:guest@localhost:5672"
-    r_key: "apply_test.*"
+    r_key: "apply.*"
     handler_type: "http_json"
     url: "http://0.0.0.0:5000"
     p_count: "2"
-    TLS: false
+    TLS: "false"
+    auth_type: "header-token"
+    token_header: "Auth-Token"
+    token_value: "super-token"
 disable_grpc: true
 grpc_addr: ":5111"
 grpc_tls: false

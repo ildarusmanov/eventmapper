@@ -28,7 +28,6 @@ func (a Auth) ServeHTTP(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	w.WriteHeader(403)
-	w.Write([]byte("Forbidden"))
 
 	return false
 }
