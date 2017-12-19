@@ -6,11 +6,11 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"runtime"
 	"runtime/pprof"
-	_ "net/http/pprof"
 )
 
 var configfile = flag.String("configfile", "config.yml", "load config from `file`")
@@ -87,7 +87,6 @@ func main() {
 		httpServer.Shutdown(context.Background())
 	}
 }
-
 
 func loadConfig() *configs.Config {
 	log.Printf("[x] Load config")
