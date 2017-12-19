@@ -3,15 +3,14 @@ package main
 import (
 	"context"
 	"eventmapper/configs"
-	"eventmapper/middlewares"
 	"flag"
-	"github.com/WajoxSoftware/middleware"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"runtime"
 	"runtime/pprof"
+	_ "net/http/pprof"
 )
 
 var configfile = flag.String("configfile", "config.yml", "load config from `file`")
@@ -24,17 +23,51 @@ func main() {
 	signal.Notify(stop, os.Interrupt)
 
 	flag.Parse()
+
+	// enable CPU profile
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
 		if err != nil {
 			log.Fatal("could not create CPU profile: ", err)
 		}
+
 		if err := pprof.StartCPUProfile(f); err != nil {
 			log.Fatal("could not start CPU profile: ", err)
 		}
 		defer pprof.StopCPUProfile()
 	}
 
+	log.Printf("[x] Starting application...")
+	config := loadConfig()
+
+	// run event handlers
+	if config.DisableHandlers {
+		log.Printf("[*] Handlers are disabled")
+	} else {
+		log.Printf("[x] Start events listener")
+		BindEventsHandlers(config, closeCh)
+	}
+
+	// run grpc server
+	if config.DisableGrpc {
+		log.Printf("[*] GRPC is disabled")
+	} else {
+		log.Printf("[x] Start grpc server")
+		StartGrpc(config)
+	}
+
+	// run https server
+	var httpServer *http.Server
+	if config.DisableHttp {
+		log.Printf("[*] Http is disabled")
+	} else {
+		log.Printf("[x] Start http server")
+		httpServer = StartHttpsServer(config)
+	}
+
+	<-stop
+
+	// enable Memory profile
 	if *memprofile != "" {
 		f, err := os.Create(*memprofile)
 		if err != nil {
@@ -47,52 +80,21 @@ func main() {
 		f.Close()
 	}
 
-	log.Printf("[x] Starting application...")
+	// gracefully shutdown
+	closeCh <- true
 
+	if httpServer != nil {
+		httpServer.Shutdown(context.Background())
+	}
+}
+
+
+func loadConfig() *configs.Config {
 	log.Printf("[x] Load config")
 
 	if *configfile == "" {
 		log.Fatal("could not read config file")
 	}
 
-	config := configs.LoadConfigFile(*configfile)
-
-	log.Printf("[x] Create router")
-	routerHandler := CreateNewRouterHandler(config)
-
-	log.Printf("[x] Define middleware")
-	mware := middleware.CreateNewMiddleware()
-	mware.AddHandler(middlewares.CreateNewAuth(config.HttpAuthType, config.HttpAuthParams))
-	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
-	mware.AddHandler(routerHandler)
-
-	if config.DisableHandlers {
-		log.Printf("[*] Handlers are disabled")
-	} else {
-		log.Printf("[x] Start events listener")
-		BindEventsHandlers(config, closeCh)
-	}
-
-	if config.DisableGrpc {
-		log.Printf("[*] GRPC is disabled")
-	} else {
-		log.Printf("[x] Start grpc server")
-		StartGrpc(config)
-	}
-
-	var httpServer *http.Server
-	if config.DisableHttp {
-		log.Printf("[*] Http is disabled")
-	} else {
-		log.Printf("[x] Start http server")
-		httpServer = StartHttpsServer(mware, config)
-	}
-
-	<-stop
-
-	closeCh <- true
-
-	if httpServer != nil {
-		httpServer.Shutdown(context.Background())
-	}
+	return configs.LoadConfigFile(*configfile)
 }

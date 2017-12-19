@@ -3,6 +3,8 @@ package main
 import (
 	"eventmapper/configs"
 	"eventmapper/controllers"
+	"eventmapper/middlewares"
+	"github.com/WajoxSoftware/middleware"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -35,9 +37,18 @@ func createNewRouter(config *configs.Config) *mux.Router {
 	return router
 }
 
-func StartHttpsServer(handler http.Handler, config *configs.Config) *http.Server {
+func StartHttpsServer(config *configs.Config) *http.Server {
+	log.Printf("[x] Create router")
+	routerHandler := CreateNewRouterHandler(config)
+
+	log.Printf("[x] Define middleware")
+	mware := middleware.CreateNewMiddleware()
+	mware.AddHandler(middlewares.CreateNewAuth(config.HttpAuthType, config.HttpAuthParams))
+	mware.AddHandler(middlewares.CreateNewJsonOkResponse())
+	mware.AddHandler(routerHandler)
+
 	srv := &http.Server{
-		Handler: handler,
+		Handler: mware,
 		Addr:    config.ServerHost,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
