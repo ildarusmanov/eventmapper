@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/ildarusmanov/eventmapper"
   packages = ["configs","controllers","middlewares","models","mq","pb","services","tests"]
-  revision = "d0f8e9d44660acd8a8832d00b6ce98f6182d133f"
+  revision = "f923f6896aca2982f73b629c4031f7dcdcab2328"
 
 [[projects]]
   branch = "master"
@@ -47,7 +47,7 @@
   branch = "master"
   name = "golang.org/x/text"
   packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "e1b31abf3ebf7e81dc1a004fa46c64f2e8de65c6"
+  revision = "eb22672bea55af56d225d4e35405f4d2e9f062a0"
 
 [[projects]]
   branch = "master"
