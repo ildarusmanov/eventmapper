@@ -8,4 +8,4 @@ env:
   - AMQP_URL=amqp://guest:guest@127.0.0.1:5672/
 script:
   - ./pre-commit
-  - go test -cpu=1,2 -v -tags integration ./...
+  - go test -cpu=1,2 -v ./models/ ./controllers/ ./mq/
