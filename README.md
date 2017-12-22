@@ -1,5 +1,8 @@
 Event mapperservice
 ==========================
+
+[![Build Status](https://travis-ci.org/ildarusmanov/eventmapper.svg?branch=master)](https://travis-ci.org/ildarusmanov/eventmapper)
+
 ## Setup
 
 1. Install and run RabbitMQ
