@@ -1,4 +1,4 @@
-Event mapperservice
+Event mapper service
 ==========================
 
 [![Build Status](https://travis-ci.org/ildarusmanov/eventmapper.svg?branch=master)](https://travis-ci.org/ildarusmanov/eventmapper)
