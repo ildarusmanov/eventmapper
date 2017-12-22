@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/mq"
 	"gopkg.in/validator.v2"
 )
 

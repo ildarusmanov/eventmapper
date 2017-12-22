@@ -1,9 +1,9 @@
 package main
 
 import (
-	"eventmapper/configs"
-	"eventmapper/controllers"
-	"eventmapper/middlewares"
+	"github.com/ildarusmanov/eventmapper/configs"
+	"github.com/ildarusmanov/eventmapper/controllers"
+	"github.com/ildarusmanov/eventmapper/middlewares"
 	"github.com/WajoxSoftware/middleware"
 	"github.com/gorilla/mux"
 	"log"

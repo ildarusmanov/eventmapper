@@ -1,7 +1,7 @@
 package mq
 
 import (
-	"eventmapper/tests"
+	"github.com/ildarusmanov/eventmapper/tests"
 	"testing"
 )
 

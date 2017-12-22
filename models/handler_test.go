@@ -1,8 +1,8 @@
 package models
 
 import (
-	"eventmapper/mq"
-	"eventmapper/tests"
+	"github.com/ildarusmanov/eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/tests"
 	"net/http"
 	"net/http/httptest"
 	"testing"

@@ -27,6 +27,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/ildarusmanov/eventmapper"
+  packages = ["configs","controllers","middlewares","models","mq","pb","services","tests"]
+  revision = "d0f8e9d44660acd8a8832d00b6ce98f6182d133f"
+
+[[projects]]
+  branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
   revision = "ff34ec9cc65c2a23db5126d962c431018f65af59"
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d59e3c4a50e2d5b4bccf0fe2179b2dcf453aafc85d96f3abf80c065d442df1d6"
+  inputs-digest = "2f197e8294ece7017537110d36d3fa858aaecd05e0da0a5817f125f2b6f0a6e4"
   solver-name = "gps-cdcl"
   solver-version = 1

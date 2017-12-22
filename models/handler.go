@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/mq"
 	"github.com/streadway/amqp"
 	"log"
 )

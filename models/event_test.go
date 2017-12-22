@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/mq"
 	"github.com/streadway/amqp"
 	"gopkg.in/validator.v2"
 	"testing"

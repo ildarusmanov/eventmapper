@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"eventmapper/configs"
+	"github.com/ildarusmanov/eventmapper/configs"
 
 	"path/filepath"
 )

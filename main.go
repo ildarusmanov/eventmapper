@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"eventmapper/configs"
+	"github.com/ildarusmanov/eventmapper/configs"
 	"flag"
 	"log"
 	"net/http"

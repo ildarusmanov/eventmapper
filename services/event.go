@@ -1,7 +1,7 @@
 package services
 
 import (
-	"eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/mq"
 )
 
 func PublishEvent(event mq.Event, mqUrl, rKey string) (mq.Event, error) {

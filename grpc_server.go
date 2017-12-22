@@ -1,11 +1,11 @@
 package main
 
 import (
-	"eventmapper/configs"
-	"eventmapper/models"
-	"eventmapper/mq"
-	"eventmapper/pb"
-	"eventmapper/services"
+	"github.com/ildarusmanov/eventmapper/configs"
+	"github.com/ildarusmanov/eventmapper/models"
+	"github.com/ildarusmanov/eventmapper/mq"
+	"github.com/ildarusmanov/eventmapper/pb"
+	"github.com/ildarusmanov/eventmapper/services"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

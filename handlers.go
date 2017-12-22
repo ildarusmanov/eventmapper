@@ -1,8 +1,8 @@
 package main
 
 import (
-	"eventmapper/configs"
-	"eventmapper/models"
+	"github.com/ildarusmanov/eventmapper/configs"
+	"github.com/ildarusmanov/eventmapper/models"
 )
 
 func BindEventsHandlers(config *configs.Config, closeCh chan bool) {

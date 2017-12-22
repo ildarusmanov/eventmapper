@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"eventmapper/models"
-	"eventmapper/tests"
+	"github.com/ildarusmanov/eventmapper/models"
+	"github.com/ildarusmanov/eventmapper/tests"
 
 	"bytes"
 	"encoding/json"

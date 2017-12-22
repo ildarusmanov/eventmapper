@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"errors"
-	"eventmapper/pb"
+	"github.com/ildarusmanov/eventmapper/pb"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
