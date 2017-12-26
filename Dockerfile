@@ -6,18 +6,11 @@ FROM golang:1.8
 COPY . /go/src/eventmapper
 
 # setup dependencies
-RUN go get github.com/WajoxSoftware/middleware
-RUN go get github.com/streadway/amqp
-RUN go get github.com/gorilla/mux
-RUN go get gopkg.in/validator.v2
-RUN go get gopkg.in/yaml.v2
-RUN go get golang.org/x/net/context
-RUN go get github.com/golang/protobuf/proto
-RUN go get google.golang.org/grpc
+go get -u github.com/golang/dep/cmd/dep
+dep ensure
 
 
 RUN go install eventmapper
-
 
 # Run the command by default when the container starts.
 ENTRYPOINT /go/bin/eventmapper --configfile "/go/src/eventmapper/config.yml"
