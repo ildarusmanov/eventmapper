@@ -6,8 +6,9 @@ FROM golang:1.8
 COPY . /go/src/eventmapper
 
 # setup dependencies
-go get -u github.com/golang/dep/cmd/dep
-dep ensure
+WORKDIR /go/src/eventmapper
+RUN go get -u github.com/golang/dep/cmd/dep
+RUN dep ensure
 
 
 RUN go install eventmapper
