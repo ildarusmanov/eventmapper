@@ -3,18 +3,18 @@
 FROM golang:1.8
 
 # Copy the local package files to the container's workspace.
-COPY . /go/src/eventmapper
+COPY . /go/src/github.com/ildarusmanov/eventmapper
 
 # setup dependencies
-WORKDIR /go/src/eventmapper
+WORKDIR /go/src/github.com/ildarusmanov/eventmapper
 RUN go get -u github.com/golang/dep/cmd/dep
 RUN dep ensure
 
 
-RUN go install eventmapper
+RUN go install gituhb.com/ildarusmanov/eventmapper
 
 # Run the command by default when the container starts.
-ENTRYPOINT /go/bin/eventmapper --configfile "/go/src/eventmapper/config.yml"
+ENTRYPOINT /go/bin/eventmapper --configfile "/go/src/github.com/ildarusmanov/eventmapper/config.yml"
 
 # Document that the service listens on port 8000.
 EXPOSE 8000

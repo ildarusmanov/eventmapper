@@ -5,5 +5,8 @@ services:
   - rabbitmq
 env:
   - AMQP_URL=amqp://guest:guest@127.0.0.1:5672/
+intstall:
+  - go get -u github.com/golang/dep/cmd/dep
+  - dep ensure
 script:
   - go test -cpu=1,2 -v ./models/ ./controllers/ ./mq/
