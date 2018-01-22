@@ -53,7 +53,7 @@ func runGrpcServer(config *configs.Config) {
 	opts, err := getGrpcServerOptions(config)
 
 	if err != nil {
-		log.Fatalf("failed wirg %v", err)
+		log.Fatalf("failed with %v", err)
 	}
 
 	grpcServer := grpc.NewServer(opts...)
