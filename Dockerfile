@@ -11,7 +11,7 @@ RUN go get -u github.com/golang/dep/cmd/dep
 RUN dep ensure
 
 
-RUN go install gituhb.com/ildarusmanov/eventmapper
+RUN go install github.com/ildarusmanov/eventmapper
 
 # Run the command by default when the container starts.
 ENTRYPOINT /go/bin/eventmapper --configfile "/go/src/github.com/ildarusmanov/eventmapper/config.yml"
